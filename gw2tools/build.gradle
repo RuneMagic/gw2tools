@@ -1,0 +1,108 @@
+apply plugin: 'java'
+apply plugin: 'findbugs'
+
+group 'com.runemagic'
+
+project.sourceCompatibility = 1.8
+project.targetCompatibility = 1.8
+project.distsDirName = "../dist"
+ext.mainClassName = 'com.runemagic.gw2tool.GW2Tools'
+
+project.defaultTasks 'build'
+
+def getVersionName = { ->
+    try
+    {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (Exception e)
+    {
+        return "0.1.0";
+    }
+}
+
+def cleanVersion = { ->
+    return (project.version =~ /(\d+\.\d+\.\d+).*/)[0][1]
+}
+
+project.version = getVersionName()
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.3'
+}
+
+findbugs
+        {
+            ignoreFailures = true
+            effort = "max"
+            reportLevel = "low"
+            toolVersion = '3.0.0'
+        }
+def testWorkingDir = new File("${project.projectDir}/build/test-wd")
+test
+        {
+            doFirst {
+                testWorkingDir.mkdirs()
+            }
+            ignoreFailures = true
+            workingDir = testWorkingDir
+        }
+
+
+repositories
+        {
+            mavenLocal()
+            mavenCentral()
+        }
+
+dependencies
+        {
+            //compile 'com.google.code.gson:gson:2.3.1'
+            compile 'org.json:json:20141113'
+            compile group: 'com.faelar.ftoollib', name: 'ftoollib', version: '1.4.0'
+            compile group: 'com.google.guava', name: 'guava', version: '16.0.1'
+            compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.12'
+            compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.3'
+            testCompile group: 'junit', name: 'junit', version: '4.11'
+        }
+
+jar
+        {
+            archiveName='gw2tools.jar'
+            from configurations.runtime
+            from zipTree('tools/loader/jar-in-jar-loader.zip')
+            manifest {
+                attributes (
+                        'Implementation-Title': project.name,
+                        'Implementation-Version': project.version,
+                        'Specification-Title': project.name,
+                        'Specification-Version': cleanVersion(),
+                        'Main-Class': 'org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader',
+                        'Rsrc-Main-Class': mainClassName,
+                        'Class-Path': '.',
+                        'Rsrc-Class-Path': "./ ${configurations.runtime.collect{it.name}.join(' ')}"
+                )
+            }
+        }
+
+artifacts {
+    archives jar
+}
+
+assemble <<
+        {
+            copy
+                    {
+                        from "${project.buildDir}/libs/gw2tools.jar"
+                        into project.distsDir
+                    }
+        }
