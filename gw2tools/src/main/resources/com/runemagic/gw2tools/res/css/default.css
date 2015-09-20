@@ -1,4 +1,296 @@
 
+.root {
+    -fx-font-family: "System";
+    -fx-font-size: 13.0px;
+    -fx-base: #474747;
+    -fx-background: rgba(41, 41, 41, 1);
+    -fx-accent: rgba(254, 207, 57, 0.5);
+	-fx-accent-filled: rgba(254, 207, 57);
+    -fx-focus-color: -fx-accent;
+    -fx-control-inner-background: #333333;
+	-fx-text-base-color: #FFFFFF;
+    -fx-text-inner-color: #FFFFFF;
+    -fx-inner-border: grey;
+    -fx-body-color: rgba(65, 65, 65, 1);
+    -fx-shadow-highlight-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-insets: 0 !IMPORTANT;
+    -inner-pane-color: #212121;
+}
+
+.root-window {
+	-fx-background-color: #212121;
+}
+
+
+.text{
+    -fx-font-smoothing-type: gray;
+}
+
+.text-input {
+	-fx-prompt-text-fill: grey;
+	-fx-background-insets: 0 !IMPORTANT;
+}
+
+.combo-box{
+    -fx-background-insets: 0 !IMPORTANT;
+}
+
+/*Buttons*/
+.button, .toggle-button, .choice-box, .date-picker .arrow-button {
+    -fx-background-radius: 1, 1, 0, 0;
+    -fx-padding: 3px 10px 3px 10px;
+    -fx-background-insets: 0 !IMPORTANT;
+}
+
+.button:hover, .date-picker .arrow-button {
+	-fx-background-color: rgba(132, 132, 132, 0.75);
+}
+
+.button:pressed, .date-picker .arrow-button {
+	-fx-background-color: rgba(150, 150, 150, 0.75);
+}
+
+.button:focused, .date-picker .arrow-button {
+
+}
+
+.check-box-table-cell > .check-box {
+	-fx-background-color: red;
+}
+
+/*TableView*/
+
+.table-view .column-header {
+	-fx-background-insets: 0 !IMPORTANT;
+	-fx-background-color: -inner-pane-color;
+	-fx-border-color: grey !IMPORTANT;
+	-fx-border-width: 1 !IMPORTANT;
+}
+
+.table-row-cell:selected {
+   -fx-background-color:  grey !IMPORTANT;
+   -fx-text-fill: black !IMPORTANT;
+   -fx-text-background-color: black !IMPORTANT;
+}
+
+.table-row-cell:selected .text {
+       -fx-fill: black !IMPORTANT;
+}
+
+
+.show-hide-columns-button {
+	-fx-insets: 0 !IMPORTANT;
+	-fx-background-color: -inner-pane-color;
+	-fx-border-color: grey !IMPORTANT;
+	-fx-border-width: 1 !IMPORTANT;
+}
+
+.show-hide-columns-button:hover {
+	-fx-background-color: rgba(132, 132, 132, 0.75);
+}
+
+.show-hide-columns-button:pressed {
+	-fx-background-color: rgba(150, 150, 150, 0.75);
+}
+
+
+/*TitledPane*/
+
+.titled-pane .title {
+	-fx-background-insets: 0.1 !IMPORTANT;
+}
+
+.menu-button {
+    -fx-background-radius: 1, 1, 0, 0;
+}
+.menu-button .label {
+    -fx-padding: 3px 18px 3px 10px;
+}
+.menu-button .arrow-button {
+    -fx-padding: 3px 6px 3px 0px;
+}
+.choice-box {
+    -fx-padding: 0 6px 0 0;
+}
+.choice-box .label {
+    -fx-padding: 3px 4px 3px 6px;
+}
+.choice-box .open-button {
+    -fx-padding: 1 0 0 8px;
+}
+
+.combo-box-base:editable .text-field, .combo-box-base .arrow-button, .combo-box .list-cell {
+    -fx-padding: 3px 6px 3px 6px;
+}
+.check-box .box {
+    -fx-padding: 0.25em;
+}
+.radio-button .radio {
+    -fx-padding: 0.333333em;
+}
+.hyperlink, {
+    -fx-text-fill: -fx-text-background-color;
+}
+.toggle-button:selected {
+    -fx-text-fill: -fx-text-base-color;
+}
+.label, .check-box, .radio-button {
+    -fx-text-fill: -fx-text-background-color;
+}
+
+.combo-box-base .arrow-button {
+    -fx-background-insets: 0, 1, 2;
+}
+.choice-box .label { /* Workaround for RT-20015 */
+    -fx-text-fill: -fx-text-base-color;
+}
+.menu-button .label { /* Workaround for RT-20015 */
+    -fx-text-fill: -fx-text-base-color;
+}
+.tool-bar:horizontal {
+    -fx-background-color: #333333;
+    -fx-padding: 10;
+ }
+
+/*ListView*/
+
+.list-view .list-cell:filled:hover {
+	-fx-background-color: #3C3C3C !IMPORTANT;
+	-fx-text-fill: white !IMPORTANT;
+}
+
+.list-view .list-cell {
+	-fx-background-color: #212121;
+}
+
+.list-view .list-cell:filled:selected:focused, .list-view .list-cell:filled:selected {
+    -fx-background-color: -fx-accent !IMPORTANT;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-padding: 0 1 0 1;
+}
+
+.decoration-resize{
+    -fx-fill:null;  /* avoid mouse events in the middle*/
+    -fx-border-color: transparent;
+    -fx-border-width: 7;
+    -fx-border-insets: 0;
+}
+
+.text-field-table-cell .text-field {
+    -fx-text-fill: white;
+}
+
+/*
+    TabPane
+*/
+.tab-pane:top .tab-header-area .headers-region .tab:top {
+    -fx-background-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-pref-width: -1;
+}
+
+.tab-header-background {
+    -fx-background-color: #333333;
+}
+
+/*
+    CheckBox
+*/
+.box {
+    -fx-background-insets: 0;
+}
+
+.check-box:selected .box .mark {
+    -fx-background-color: -fx-accent-filled;
+}
+
+/*
+    RadioButton
+*/
+.radio-button:selected .radio .dot {
+
+}
+
+/*
+    Dialog
+*/
+.dialog-pane:header .header-panel {
+    -fx-background-color: #333333;
+}
+
+
+
+.scroll-bar {
+    -fx-background-color: #272727;
+}
+
+.scroll-bar .thumb{
+    -fx-background-insets: 0;
+    -fx-border-color: #333333;
+}
+
+.outline.label .text {
+    -fx-fill: white;
+    -fx-stroke: gray;
+    -fx-stroke-width: 1;
+    -fx-font-smoothing-type: gray;
+}
+
+.scroll-bar .increment-button {
+    -fx-background-insets: 0;
+}
+
+.scroll-bar .decrement-button {
+    -fx-background-insets: 0;
+}
+
+.confirm-button {
+	-fx-background-color: rgba(51, 204, 51, 0.6);
+}
+
+.confirm-button:pressed {
+	-fx-background-color: rgba(133, 224, 133, 0.8) !IMPORTANT;
+}
+
+.confirm-button:hover{
+	-fx-background-color: rgba(107, 218, 107, 0.6);
+}
+
+
+.cancel-button {
+	-fx-background-color: rgba(204, 51, 51, 0.6);
+}
+
+.cancel-button:pressed {
+	-fx-background-color: rgba(224, 133, 133, 0.8) !IMPORTANT;
+}
+
+.cancel-button:hover{
+	-fx-background-color: rgba(218, 107, 107, 0.6);
+}
+
+.action-button {
+	-fx-background-color: rgba(51, 51, 204, 0.6);
+}
+
+.action-button:pressed {
+	-fx-background-color: rgba(133, 133, 224, 0.8) !IMPORTANT;
+}
+
+.action-button:hover{
+	-fx-background-color: rgba(107, 107, 218, 0.6);
+}
+
+.group-dashed-border {
+    -fx-border-color: rgba(254, 207, 57, 0.5);
+    -fx-border-width: 5 ;
+    -fx-border-style: segments(10, 10, 10, 10);
+}
+
+/*Bordered Title Pane*/
 .bordered-titled-title {
   -fx-background-color: white;
   -fx-translate-y: -16;
@@ -16,6 +308,7 @@
   -fx-padding: 26 10 10 10;
 }
 
+/*FontAwesome*/
 .font-icon {
     -fx-font-family: FontAwesome;
     -fx-font-size: 12;
