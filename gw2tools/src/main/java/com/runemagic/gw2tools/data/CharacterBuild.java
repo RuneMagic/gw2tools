@@ -13,9 +13,7 @@ public class CharacterBuild
 
 	public CharacterBuild()
 	{
-		spec1.set(new CharacterSpecialization());
-		spec2.set(new CharacterSpecialization());
-		spec3.set(new CharacterSpecialization());
+
 	}
 
 	public CharacterSpecialization getSpec1()

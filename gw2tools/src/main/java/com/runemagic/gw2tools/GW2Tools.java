@@ -1,7 +1,6 @@
 package com.runemagic.gw2tools;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -15,14 +14,11 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.faelar.util.io.ResourceManager;
+import com.faelar.util.javafx.JFXTools;
 import com.runemagic.gw2tools.gui.GW2ToolsGUI;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
 import com.runemagic.gw2tools.util.ThreadManager;
-import com.faelar.util.config.AutoConfigLoader;
-import com.faelar.util.config.ConfigInterface;
-import com.faelar.util.config.INIConfigManager;
-import com.faelar.util.io.ResourceManager;
-import com.faelar.util.javafx.JFXTools;
 
 import ch.qos.logback.classic.Level;
 
@@ -31,7 +27,6 @@ public class GW2Tools extends Application
 	private static final Logger log = LoggerFactory.getLogger(GW2Tools.class);
 
 	private static GW2Tools gw2tool;
-	private final ConfigInterface conf;
 	private Stage primaryStage;
 
 	private ResourceManager res;
@@ -43,10 +38,8 @@ public class GW2Tools extends Application
 		gw2tool=this;
 		//conf = new INIConfigManager(new File("config"));
 		res=new ResourceManager("com/runemagic/gw2tool/res/", "res");
-		conf = new AutoConfigLoader(INIConfigManager.get(new File("config")));
 		threads=new GlobalPoolThreadManager();
 		setLogLevel(Level.INFO);//TODO configurable
-		conf.load();//TODO or not
 	}
 
 	private void setLogLevel(ch.qos.logback.classic.Level level)
@@ -67,14 +60,14 @@ public class GW2Tools extends Application
 	public void saveAll()
 	{
 		saveGUI();
-		conf.save();
+		//conf.save();
 	}
 
 	public static GW2Tools inst()
 	{
 		return gw2tool;
 	}
-	public ConfigInterface getConfig(String section)
+	/*public ConfigInterface getConfig(String section)
 	{
 		return conf.getSection(section);
 	}
@@ -82,7 +75,7 @@ public class GW2Tools extends Application
 	public ConfigInterface getConfig()
 	{
 		return conf;
-	}
+	}*/
 
 	public static Image getImageResource(String name)
 	{
@@ -149,16 +142,16 @@ public class GW2Tools extends Application
 	private void initPrimaryStage(Stage primaryStage) throws IOException
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
-		ConfigInterface conf=getConfig("GUI");
+		//ConfigInterface conf=getConfig("GUI");
 		Scene mainScene=new GW2ToolsGUI(this);
 		addMainCSS(mainScene);
 		primaryStage.setScene(mainScene);
 		primaryStage.setTitle("GW2Tools");//TODO_H version
-		primaryStage.setWidth(conf.getDouble("window_width", 1024));
+		/*primaryStage.setWidth(conf.getDouble("window_width", 1024));
 		primaryStage.setHeight(conf.getDouble("window_height", 600));
 		primaryStage.setX(conf.getDouble("window_x", primaryStage.getX()));
 		primaryStage.setY(conf.getDouble("window_y", primaryStage.getY()));
-		primaryStage.setMaximized(conf.getBoolean("window_maximized", primaryStage.isMaximized()));
+		primaryStage.setMaximized(conf.getBoolean("window_maximized", primaryStage.isMaximized()));*/
 		/*primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
 			public void handle(WindowEvent event)
@@ -183,12 +176,12 @@ public class GW2Tools extends Application
 	private void saveGUI()
 	{
 		Stage stage=getPrimaryStage();
-		ConfigInterface conf=getConfig("GUI");
+		/*ConfigInterface conf=getConfig("GUI");
 		conf.put("window_width", stage.getWidth());
 		conf.put("window_height", stage.getHeight());
 		conf.put("window_x", stage.getX());
 		conf.put("window_y", stage.getY());
-		conf.put("window_maximized", stage.isMaximized());
+		conf.put("window_maximized", stage.isMaximized());*/
 	}
 
 	public static void main(String[] args)
