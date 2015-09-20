@@ -1,7 +1,6 @@
 /build
 /dist
 /.gradle
-/*.iml
 /.idea/libraries
 /.idea/gradle.xml
 /.idea/workspace.xml
