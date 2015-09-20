@@ -37,7 +37,7 @@ public class GW2Tools extends Application
 		if (gw2tool!=null) throw new Exception();//TODO better exception
 		gw2tool=this;
 		//conf = new INIConfigManager(new File("config"));
-		res=new ResourceManager("com/runemagic/gw2tool/res/", "res");
+		res=new ResourceManager("com/runemagic/gw2tools/res/", "res");
 		threads=new GlobalPoolThreadManager();
 		setLogLevel(Level.INFO);//TODO configurable
 	}
