@@ -12,15 +12,14 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.runemagic.gw2tools.data.APIKeyHolder;
-import com.runemagic.gw2tools.data.CharacterBuild;
-import com.runemagic.gw2tools.data.CharacterGender;
-import com.runemagic.gw2tools.data.CharacterProfession;
-import com.runemagic.gw2tools.data.CharacterRace;
-import com.runemagic.gw2tools.data.CharacterSpecialization;
-import com.runemagic.gw2tools.data.CharacterTrait;
-import com.runemagic.gw2tools.data.GW2Account;
-import com.runemagic.gw2tools.data.GW2Character;
+import com.runemagic.gw2tools.api.character.CharacterBuild;
+import com.runemagic.gw2tools.api.character.CharacterGender;
+import com.runemagic.gw2tools.api.character.CharacterProfession;
+import com.runemagic.gw2tools.api.character.CharacterRace;
+import com.runemagic.gw2tools.api.character.CharacterSpecialization;
+import com.runemagic.gw2tools.api.character.CharacterTrait;
+import com.runemagic.gw2tools.api.character.GW2Account;
+import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class GW2API
 {

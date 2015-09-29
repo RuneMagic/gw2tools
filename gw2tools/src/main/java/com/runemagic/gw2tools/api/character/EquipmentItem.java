@@ -1,4 +1,4 @@
-package com.runemagic.gw2tools.data;
+package com.runemagic.gw2tools.api.character;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ListProperty;

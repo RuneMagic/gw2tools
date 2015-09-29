@@ -1,4 +1,4 @@
-package com.runemagic.gw2tools.data;
+package com.runemagic.gw2tools.api.character;
 
 public enum CharacterProfession
 {

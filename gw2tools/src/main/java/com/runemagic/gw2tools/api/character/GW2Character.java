@@ -1,4 +1,4 @@
-package com.runemagic.gw2tools.data;
+package com.runemagic.gw2tools.api.character;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +11,8 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+
+import com.runemagic.gw2tools.api.APIKeyHolder;
 
 public class GW2Character implements APIKeyHolder
 {

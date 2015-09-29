@@ -1,10 +1,12 @@
-package com.runemagic.gw2tools.data;
+package com.runemagic.gw2tools.api.character;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+
+import com.runemagic.gw2tools.api.APIKeyHolder;
 
 public class GW2Account implements APIKeyHolder
 {
