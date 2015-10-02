@@ -5,17 +5,28 @@ import java.time.LocalDateTime;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import com.runemagic.gw2tools.api.APIKeyHolder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-public class GW2Character implements APIKeyHolder
+import com.runemagic.gw2tools.api.APIKeyHolder;
+import com.runemagic.gw2tools.api.AbstractAPIObject;
+import com.runemagic.gw2tools.api.GW2APIException;
+import com.runemagic.gw2tools.api.GW2APISource;
+
+public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 {
+	private final static String API_RESOURCE_CHARACTERS="characters";
+
 	private StringProperty apiKey=new SimpleStringProperty();
 	private StringProperty name=new SimpleStringProperty();
 	private ObjectProperty<CharacterRace> race=new SimpleObjectProperty<>();
@@ -33,11 +44,57 @@ public class GW2Character implements APIKeyHolder
 	private ObjectProperty<CharacterEquipment> equipment=new SimpleObjectProperty<>();
 	//TODO inventory
 
-	public GW2Character()
+	public GW2Character(GW2APISource source, String name)
 	{
+		super(source);
 		buildPVE.set(new CharacterBuild());
 		buildPVP.set(new CharacterBuild());
 		buildWVW.set(new CharacterBuild());
+	}
+
+	@Override
+	protected void updateImpl() throws GW2APIException
+	{
+		JSONObject json=new JSONObject(readAPIv2Resource(API_RESOURCE_CHARACTERS + "/" + name, this));
+		name.set(json.getString("name"));
+		race.set(CharacterRace.byName(json.getString("race")));//TODO exception handling
+		gender.set(CharacterGender.byName(json.getString("gender")));
+		profession.set(CharacterProfession.byName(json.getString("profession")));
+		level.set(json.getInt("level"));
+		guild.set(json.optString("guild", null));//TODO guild parsing
+		created.set(LocalDateTime.parse(json.getString("created")));
+		age.set(json.getLong("age"));
+		deaths.set(json.getInt("deaths"));
+		//TODO crafting
+		JSONObject specs=json.optJSONObject("specializations");
+		if (specs!=null)
+		{
+			updateBuild(getBuildPVE(), json.getJSONArray("pve"));
+			updateBuild(getBuildPVP(), json.getJSONArray("pvp"));
+			updateBuild(getBuildWVW(), json.getJSONArray("wvw"));
+		}
+	}
+
+	private void updateBuild(CharacterBuild build, JSONArray json)
+	{
+		build.setSpec1(readSpecialization(json.getJSONObject(0)));
+		build.setSpec2(readSpecialization(json.getJSONObject(1)));
+		build.setSpec3(readSpecialization(json.getJSONObject(2)));
+	}
+
+	private CharacterSpecialization readSpecialization(JSONObject json)
+	{
+		CharacterSpecialization spec=new CharacterSpecialization(json.getInt("id"));
+		JSONArray traitsArray=json.getJSONArray("traits");
+		spec.setTrait1(readTrait(traitsArray.getInt(0)));
+		spec.setTrait2(readTrait(traitsArray.getInt(1)));
+		spec.setTrait3(readTrait(traitsArray.getInt(2)));
+		return spec;
+	}
+
+	private CharacterTrait readTrait(int id)
+	{
+		return CharacterTrait.of(id);
 	}
 
 	public String getAPIKey()
@@ -50,14 +107,9 @@ public class GW2Character implements APIKeyHolder
 		return name.get();
 	}
 
-	public StringProperty nameProperty()
+	public ReadOnlyStringProperty nameProperty()
 	{
 		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name.set(name);
 	}
 
 	public CharacterRace getRace()
@@ -65,14 +117,9 @@ public class GW2Character implements APIKeyHolder
 		return race.get();
 	}
 
-	public ObjectProperty<CharacterRace> raceProperty()
+	public ReadOnlyObjectProperty<CharacterRace> raceProperty()
 	{
 		return race;
-	}
-
-	public void setRace(CharacterRace race)
-	{
-		this.race.set(race);
 	}
 
 	public CharacterGender getGender()
@@ -80,14 +127,9 @@ public class GW2Character implements APIKeyHolder
 		return gender.get();
 	}
 
-	public ObjectProperty<CharacterGender> genderProperty()
+	public ReadOnlyObjectProperty<CharacterGender> genderProperty()
 	{
 		return gender;
-	}
-
-	public void setGender(CharacterGender gender)
-	{
-		this.gender.set(gender);
 	}
 
 	public CharacterProfession getProfession()
@@ -95,14 +137,9 @@ public class GW2Character implements APIKeyHolder
 		return profession.get();
 	}
 
-	public ObjectProperty<CharacterProfession> professionProperty()
+	public ReadOnlyObjectProperty<CharacterProfession> professionProperty()
 	{
 		return profession;
-	}
-
-	public void setProfession(CharacterProfession profession)
-	{
-		this.profession.set(profession);
 	}
 
 	public int getLevel()
@@ -110,14 +147,9 @@ public class GW2Character implements APIKeyHolder
 		return level.get();
 	}
 
-	public IntegerProperty levelProperty()
+	public ReadOnlyIntegerProperty levelProperty()
 	{
 		return level;
-	}
-
-	public void setLevel(int level)
-	{
-		this.level.set(level);
 	}
 
 	public String getGuild()
@@ -125,14 +157,9 @@ public class GW2Character implements APIKeyHolder
 		return guild.get();
 	}
 
-	public StringProperty guildProperty()
+	public ReadOnlyStringProperty guildProperty()
 	{
 		return guild;
-	}
-
-	public void setGuild(String guild)
-	{
-		this.guild.set(guild);
 	}
 
 	public LocalDateTime getCreated()
@@ -140,14 +167,9 @@ public class GW2Character implements APIKeyHolder
 		return created.get();
 	}
 
-	public ObjectProperty<LocalDateTime> createdProperty()
+	public ReadOnlyObjectProperty<LocalDateTime> createdProperty()
 	{
 		return created;
-	}
-
-	public void setCreated(LocalDateTime created)
-	{
-		this.created.set(created);
 	}
 
 	public long getAge()
@@ -155,14 +177,9 @@ public class GW2Character implements APIKeyHolder
 		return age.get();
 	}
 
-	public LongProperty ageProperty()
+	public ReadOnlyLongProperty ageProperty()
 	{
 		return age;
-	}
-
-	public void setAge(long age)
-	{
-		this.age.set(age);
 	}
 
 	public int getDeaths()
@@ -170,14 +187,9 @@ public class GW2Character implements APIKeyHolder
 		return deaths.get();
 	}
 
-	public IntegerProperty deathsProperty()
+	public ReadOnlyIntegerProperty deathsProperty()
 	{
 		return deaths;
-	}
-
-	public void setDeaths(int deaths)
-	{
-		this.deaths.set(deaths);
 	}
 
 	public CharacterBuild getBuildPVE()
@@ -190,11 +202,6 @@ public class GW2Character implements APIKeyHolder
 		return buildPVE;
 	}
 
-	/*public void setBuildPVE(CharacterBuild buildPVE)
-	{
-		this.buildPVE.set(buildPVE);
-	}*/
-
 	public CharacterBuild getBuildPVP()
 	{
 		return buildPVP.get();
@@ -204,11 +211,6 @@ public class GW2Character implements APIKeyHolder
 	{
 		return buildPVP;
 	}
-
-	/*public void setBuildPVP(CharacterBuild buildPVP)
-	{
-		this.buildPVP.set(buildPVP);
-	}*/
 
 	public CharacterBuild getBuildWVW()
 	{
@@ -220,23 +222,13 @@ public class GW2Character implements APIKeyHolder
 		return buildWVW;
 	}
 
-	/*public void setBuildWVW(CharacterBuild buildWVW)
-	{
-		this.buildWVW.set(buildWVW);
-	}*/
-
 	public CharacterEquipment getEquipment()
 	{
 		return equipment.get();
 	}
 
-	public ObjectProperty<CharacterEquipment> equipmentProperty()
+	public ReadOnlyObjectProperty<CharacterEquipment> equipmentProperty()
 	{
 		return equipment;
-	}
-
-	public void setEquipment(CharacterEquipment equipment)
-	{
-		this.equipment.set(equipment);
 	}
 }
