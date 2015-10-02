@@ -41,6 +41,15 @@ public class GW2Account extends AbstractAPIObject implements APIKeyHolder
 		return characters;
 	}
 
+	public GW2Character getCharacter(String name)
+	{
+		for (GW2Character character:characters)
+		{
+			if (character.getName().equals(name)) return character;
+		}
+		return null;
+	}
+
 	@Override protected void updateImpl() throws GW2APIException
 	{
 		List<String> charNames=new ArrayList<String>();
@@ -67,7 +76,7 @@ public class GW2Account extends AbstractAPIObject implements APIKeyHolder
 
 		for (String charName:charNames)
 		{
-			GW2Character character=new GW2Character(source, charName);
+			GW2Character character=new GW2Character(source, charName, apiKey.get());
 			characters.add(character);//TODO keep original order
 			character.update();
 		}

@@ -2,7 +2,6 @@ package com.runemagic.gw2tools.api;
 
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyProperty;
 
 public interface GW2APIObject
 {
@@ -19,9 +18,9 @@ public interface GW2APIObject
 	 */
 	//GW2APISource getAPISource();
 
-	ReadOnlyProperty<?> property(String name);
+	/*ReadOnlyProperty<?> property(String name);
 
-	Object get(String name);
+	Object get(String name);*/
 
 	/**
 	 * Forces the object ro re-fetch data from the GW2 API Source.<br>

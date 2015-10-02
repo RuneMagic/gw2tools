@@ -1,7 +1,5 @@
 package com.runemagic.gw2tools.api;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -9,10 +7,8 @@ import java.util.concurrent.Future;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyFloatProperty;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleFloatProperty;
 
@@ -25,7 +21,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 	private FloatProperty updateProgress=new SimpleFloatProperty();
 	private BooleanProperty updating=new SimpleBooleanProperty();
 	protected final GW2APISource source;
-	private Map<String, Property> fields=new HashMap<>();
+	//private Map<String, Property> fields=new HashMap<>();
 	private Future<?> task;
 
 	public AbstractAPIObject(GW2APISource source)
@@ -37,7 +33,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 	protected void onUpdateFinished(){}
 
-	public ReadOnlyProperty<?> property(String name)
+	/*public ReadOnlyProperty<?> property(String name)
 	{
 		return fields.get(name);
 	}
@@ -47,7 +43,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		ReadOnlyProperty<?> field=property(name);
 		if (field==null) return null; //TODO exception/log
 		return field.getValue();
-	}
+	}*/
 
 	protected String readAPIv2Resource(String resource, APIKeyHolder keyHolder) throws GW2APIException
 	{

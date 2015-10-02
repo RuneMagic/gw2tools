@@ -44,9 +44,11 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 	private ObjectProperty<CharacterEquipment> equipment=new SimpleObjectProperty<>();
 	//TODO inventory
 
-	public GW2Character(GW2APISource source, String name)
+	public GW2Character(GW2APISource source, String name, String apiKey)
 	{
 		super(source);
+		this.apiKey.set(apiKey);
+		this.name.set(name);
 		buildPVE.set(new CharacterBuild());
 		buildPVP.set(new CharacterBuild());
 		buildWVW.set(new CharacterBuild());
