@@ -2,6 +2,7 @@ package com.runemagic.gw2tools.api.character;
 
 import java.time.Instant;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
@@ -22,6 +23,7 @@ import com.runemagic.gw2tools.api.APIKeyHolder;
 import com.runemagic.gw2tools.api.AbstractAPIObject;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
+import com.runemagic.gw2tools.util.StringTools;
 
 public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 {
@@ -36,6 +38,7 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 	private StringProperty guild=new SimpleStringProperty();//TODO guild
 	private ObjectProperty<Instant> created=new SimpleObjectProperty<>();
 	private LongProperty age=new SimpleLongProperty();
+	private StringProperty formattedAge=new SimpleStringProperty();
 	private IntegerProperty deaths=new SimpleIntegerProperty();
 	//TODO crafting
 	private ObjectProperty<CharacterBuild> buildPVE=new SimpleObjectProperty<>();
@@ -52,6 +55,8 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 		buildPVE.set(new CharacterBuild());
 		buildPVP.set(new CharacterBuild());
 		buildWVW.set(new CharacterBuild());
+
+		formattedAge.bind(Bindings.createStringBinding(()-> StringTools.formatSecondsLong(age.get()), age));
 	}
 
 	private String getURLEncodedName()
@@ -246,5 +251,15 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 	public ReadOnlyObjectProperty<CharacterEquipment> equipmentProperty()
 	{
 		return equipment;
+	}
+
+	public String getFormattedAge()
+	{
+		return formattedAge.get();
+	}
+
+	public ReadOnlyStringProperty formattedAgeProperty()
+	{
+		return formattedAge;
 	}
 }

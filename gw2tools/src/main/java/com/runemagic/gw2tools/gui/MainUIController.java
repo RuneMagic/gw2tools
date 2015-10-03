@@ -55,7 +55,7 @@ public class MainUIController
 		colCharGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
 		colCharGuild.setCellValueFactory(new PropertyValueFactory<>("guild"));
 		colCharCreated.setCellValueFactory(new PropertyValueFactory<>("created"));
-		colCharAge.setCellValueFactory(new PropertyValueFactory<>("age"));
+		colCharAge.setCellValueFactory(new PropertyValueFactory<>("formattedAge"));
 		colCharDeaths.setCellValueFactory(new PropertyValueFactory<>("deaths"));
 	}
 
