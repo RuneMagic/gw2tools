@@ -32,4 +32,9 @@ public enum CharacterProfession
 		}
 		return null;
 	}
+
+	@Override public String toString()
+	{
+		return name;
+	}
 }

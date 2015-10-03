@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import com.faelar.util.io.ResourceManager;
 import com.faelar.util.javafx.JFXTools;
-import com.runemagic.gw2tools.gui.GW2ToolsGUI;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
 import com.runemagic.gw2tools.util.ThreadManager;
 
@@ -87,7 +86,7 @@ public class GW2Tools extends Application
 		return res;
 	}
 
-	public Object loadFXML(String name) throws IOException
+	public <T> T loadFXML(String name) throws IOException
 	{
 		return FXMLLoader.load(res.getResourceURL("fxml/" + name));
 	}
@@ -143,7 +142,8 @@ public class GW2Tools extends Application
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
 		//ConfigInterface conf=getConfig("GUI");
-		Scene mainScene=new GW2ToolsGUI(this);
+		Parent root = loadFXML("main.fxml");
+		Scene mainScene=new Scene(root);
 		addMainCSS(mainScene);
 		primaryStage.setScene(mainScene);
 		primaryStage.setTitle("GW2Tools");//TODO_H version
@@ -189,10 +189,10 @@ public class GW2Tools extends Application
 		launch(args);
 	}
 
-	public GW2ToolsGUI getPrimaryScene()
+	/*public GW2ToolsGUI getPrimaryScene()
 	{
 		return (GW2ToolsGUI)primaryStage.getScene();
-	}
+	}*/
 
 	public Stage getPrimaryStage()
 	{

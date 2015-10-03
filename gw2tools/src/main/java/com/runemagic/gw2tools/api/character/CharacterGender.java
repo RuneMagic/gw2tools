@@ -25,4 +25,9 @@ public enum CharacterGender
 		}
 		return null;
 	}
+
+	@Override public String toString()
+	{
+		return name;
+	}
 }
