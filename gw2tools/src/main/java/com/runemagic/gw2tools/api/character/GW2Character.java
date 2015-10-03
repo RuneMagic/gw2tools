@@ -1,6 +1,6 @@
 package com.runemagic.gw2tools.api.character;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
@@ -34,7 +34,7 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 	private ObjectProperty<CharacterProfession> profession=new SimpleObjectProperty<>();
 	private IntegerProperty level=new SimpleIntegerProperty();
 	private StringProperty guild=new SimpleStringProperty();//TODO guild
-	private ObjectProperty<LocalDateTime> created=new SimpleObjectProperty<>();
+	private ObjectProperty<Instant> created=new SimpleObjectProperty<>();
 	private LongProperty age=new SimpleLongProperty();
 	private IntegerProperty deaths=new SimpleIntegerProperty();
 	//TODO crafting
@@ -54,34 +54,48 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 		buildWVW.set(new CharacterBuild());
 	}
 
+	private String getURLEncodedName()
+	{
+		return name.get().replaceAll(" ", "%20");//TODO proper encoding
+	}
+
 	@Override
 	protected void updateImpl() throws GW2APIException
 	{
-		JSONObject json=new JSONObject(readAPIv2Resource(API_RESOURCE_CHARACTERS + "/" + name, this));
+		JSONObject json=new JSONObject(readAPIv2Resource(API_RESOURCE_CHARACTERS + "/" + getURLEncodedName(), this));
 		name.set(json.getString("name"));
 		race.set(CharacterRace.byName(json.getString("race")));//TODO exception handling
 		gender.set(CharacterGender.byName(json.getString("gender")));
 		profession.set(CharacterProfession.byName(json.getString("profession")));
 		level.set(json.getInt("level"));
 		guild.set(json.optString("guild", null));//TODO guild parsing
-		created.set(LocalDateTime.parse(json.getString("created")));
+		created.set(Instant.parse(json.getString("created")));
 		age.set(json.getLong("age"));
 		deaths.set(json.getInt("deaths"));
 		//TODO crafting
 		JSONObject specs=json.optJSONObject("specializations");
 		if (specs!=null)
 		{
-			updateBuild(getBuildPVE(), json.getJSONArray("pve"));
-			updateBuild(getBuildPVP(), json.getJSONArray("pvp"));
-			updateBuild(getBuildWVW(), json.getJSONArray("wvw"));
+			updateBuild(getBuildPVE(), json.optJSONArray("pve"));
+			updateBuild(getBuildPVP(), json.optJSONArray("pvp"));
+			updateBuild(getBuildWVW(), json.optJSONArray("wvw"));
 		}
 	}
 
 	private void updateBuild(CharacterBuild build, JSONArray json)
 	{
-		build.setSpec1(readSpecialization(json.getJSONObject(0)));
-		build.setSpec2(readSpecialization(json.getJSONObject(1)));
-		build.setSpec3(readSpecialization(json.getJSONObject(2)));
+		if (json!=null)
+		{
+			build.setSpec1(readSpecialization(json.getJSONObject(0)));
+			build.setSpec2(readSpecialization(json.getJSONObject(1)));
+			build.setSpec3(readSpecialization(json.getJSONObject(2)));
+		}
+		else
+		{
+			build.setSpec1(null);
+			build.setSpec2(null);
+			build.setSpec3(null);
+		}
 	}
 
 	private CharacterSpecialization readSpecialization(JSONObject json)
@@ -164,12 +178,12 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 		return guild;
 	}
 
-	public LocalDateTime getCreated()
+	public Instant getCreated()
 	{
 		return created.get();
 	}
 
-	public ReadOnlyObjectProperty<LocalDateTime> createdProperty()
+	public ReadOnlyObjectProperty<Instant> createdProperty()
 	{
 		return created;
 	}
