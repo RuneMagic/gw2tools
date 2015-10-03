@@ -81,7 +81,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			{
 				Platform.runLater(() -> {
 					updating.set(false);
-					updateProgress.set(100f);
+					updateProgress.set(1f);
 					onUpdateFinished();
 				});
 			}

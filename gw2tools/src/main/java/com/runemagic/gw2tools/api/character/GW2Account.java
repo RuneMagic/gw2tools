@@ -80,10 +80,11 @@ public class GW2Account extends AbstractAPIObject implements APIKeyHolder
 			characters.add(character);//TODO keep original order
 			character.update();
 		}
-
+		float inc=1f/characters.size();
 		for (GW2Character character:characters)
 		{
 			character.waitForUpdate();
+			progress(inc);
 		}
 	}
 }
