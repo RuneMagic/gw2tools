@@ -28,6 +28,8 @@ public @interface FXSetting
 
     double maxValue() default Double.MAX_VALUE;
 
+    boolean saveSystemChanges() default true;
+
     String displayName() default "";
 
 }

@@ -24,6 +24,8 @@ public @interface FXListSetting
 
     boolean hasDefaultValue() default false;
 
+    boolean saveSystemChanges() default true;
+
     String displayName() default "";
 
 }

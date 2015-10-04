@@ -18,5 +18,4 @@ public interface FXSettingsModule
     Node getContent();
 
     BooleanBinding hasChangesProperty();
-
 }

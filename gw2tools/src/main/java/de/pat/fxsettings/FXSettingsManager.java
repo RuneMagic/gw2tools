@@ -27,9 +27,7 @@ import javafx.scene.layout.VBox;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FXSettingsManager
 {
@@ -171,8 +169,19 @@ public class FXSettingsManager
         submit.setDisable(true);
         submit.getStyleClass().add("confirm-button");
         submit.setOnAction((e) -> {
-            categories.values().forEach(de.pat.fxsettings.moduletypes.FXSettingsModule::onSubmit);
-            saveFXSettingsSheet(sheet);
+
+            List<String> changedValues = new ArrayList<>();
+
+            for(FXSettingsModule module : categories.values())
+            {
+                if(module.hasChangesProperty().getValue())
+                {
+                    changedValues.add(module.getFieldName());
+                    module.onSubmit();
+                }
+            }
+
+            saveFXSettingsSheet(sheet, changedValues);
         });
 
         Button cancel = new Button("Revert");
@@ -223,11 +232,16 @@ public class FXSettingsManager
 
     public boolean saveFXSettingsSheet(FXSettingsSheet sheet)
     {
+        return saveFXSettingsSheet(sheet, null);
+    }
+
+    public boolean saveFXSettingsSheet(FXSettingsSheet sheet, List<String> changes)
+    {
         if (sheet == null) return false;
         try
         {
-            saveFXSettings(sheet);
-            saveFXListSettings(sheet);
+            saveFXSettings(sheet, changes);
+            saveFXListSettings(sheet, changes);
             sheet.onSave();
         } catch (Exception e)
         {
@@ -255,7 +269,7 @@ public class FXSettingsManager
     }
 
     @SuppressWarnings({"rawtypes"})
-    private void saveFXSettings(FXSettingsSheet sheet) throws Exception
+    private void saveFXSettings(FXSettingsSheet sheet, List<String> changes) throws Exception
     {
         FXSettingsSerializerType serializerType = sheet.getSerializerType();
         FXSettingsSerializer serializer = serrializers.get(serializerType);
@@ -267,6 +281,7 @@ public class FXSettingsManager
 
         for (Field field : fxFields)
         {
+
             if (!WritableValue.class.isAssignableFrom(field.getType()))
                 throw new InvalidFXSettingTypeException(field.getType().getName() + " is not assignable from " + WritableValue.class.getName());
 
@@ -275,7 +290,15 @@ public class FXSettingsManager
             FXSetting ant = field.getAnnotation(FXSetting.class);
             if (ant == null) continue;
 
+            if(!ant.saveSystemChanges())
+            {
+                System.out.println(field.getName());
+                System.out.println(changes);
+                if(changes == null || (!changes.contains(field.getName()) && !changes.contains(ant.displayName())))continue;
+            }
+
             String fieldName = field.getName();
+
             if (serializer.saveSetting(settingsID, fieldName, val.getValue()))
             {
                 GW2Tools.log().debug("Saved setting: " + fieldName);
@@ -287,7 +310,7 @@ public class FXSettingsManager
     }
 
     @SuppressWarnings({"rawtypes"})
-    private void saveFXListSettings(FXSettingsSheet sheet) throws Exception
+    private void saveFXListSettings(FXSettingsSheet sheet, List<String> changes) throws Exception
     {
         FXSettingsSerializerType serializerType = sheet.getSerializerType();
         FXSettingsSerializer serializer = serrializers.get(serializerType);
@@ -299,6 +322,7 @@ public class FXSettingsManager
 
         for (Field field : fxFields)
         {
+
             if (!ObservableList.class.isAssignableFrom(field.getType()))
                 throw new InvalidFXSettingTypeException(field.getType().getName() + " is not assignable from " + WritableValue.class.getName());
 
@@ -306,6 +330,8 @@ public class FXSettingsManager
 
             FXListSetting ant = field.getAnnotation(FXListSetting.class);
             if (ant == null) continue;
+
+            if(ant.saveSystemChanges() || changes == null || !changes.contains(field.getName()))continue;
 
             String fieldName = field.getName();
             if (serializer.saveValues(settingsID, fieldName, val))
