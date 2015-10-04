@@ -2,13 +2,17 @@ package com.runemagic.gw2tools;
 
 import ch.qos.logback.classic.Level;
 import com.faelar.util.io.ResourceManager;
+import com.faelar.util.javafx.FontIcon;
+import com.faelar.util.javafx.Icons;
 import com.faelar.util.javafx.JFXTools;
+import com.runemagic.gw2tools.gui.ApplicationManager;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
 import com.runemagic.gw2tools.util.ThreadManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -27,6 +31,7 @@ public class GW2Tools extends Application
 
 	private ResourceManager res;
 	private ThreadManager threads;
+	private ApplicationManager app;
 
 	public GW2Tools() throws Exception
 	{
@@ -68,6 +73,7 @@ public class GW2Tools extends Application
 	{
 		return log;
 	}
+
 	/*public ConfigInterface getConfig(String section)
 	{
 		return conf.getSection(section);
@@ -103,6 +109,7 @@ public class GW2Tools extends Application
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
+		app = new ApplicationManager();
 		try
 		{
 			this.primaryStage=primaryStage;
@@ -143,36 +150,28 @@ public class GW2Tools extends Application
 	private void initPrimaryStage(Stage primaryStage) throws IOException
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
-		//ConfigInterface conf=getConfig("GUI");
-		Parent root = loadFXML("main.fxml");
-		Scene mainScene=new Scene(root);
+
+		initToolBar();
+		initViews();
+
+		Scene mainScene=new Scene(app.getRootPane());
 		addMainCSS(mainScene);
 		primaryStage.setScene(mainScene);
-		primaryStage.setTitle("GW2Tools");//TODO_H version
-		/*primaryStage.setWidth(conf.getDouble("window_width", 1024));
-		primaryStage.setHeight(conf.getDouble("window_height", 600));
-		primaryStage.setX(conf.getDouble("window_x", primaryStage.getX()));
-		primaryStage.setY(conf.getDouble("window_y", primaryStage.getY()));
-		primaryStage.setMaximized(conf.getBoolean("window_maximized", primaryStage.isMaximized()));*/
-		/*primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			@Override
-			public void handle(WindowEvent event)
-			{
-				Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                    	try
-						{
-							stop();
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-                    }
-                });
-			}});*/
+		primaryStage.setTitle("GW2Tools");
 		primaryStage.show();
+	}
+
+
+	private void initToolBar()
+	{
+		HBox tool = app.getToolBar();
+
+		tool.getChildren().add(Icons.createIconButton(FontIcon.GEAR, "Settings", 18));
+	}
+
+	private void initViews() throws IOException
+	{
+		app.addView("Main", loadFXML("main.fxml"), Icons.createIconLabel(FontIcon.BAR_CHART), true);
 	}
 
 	private void saveGUI()
