@@ -1,13 +1,18 @@
 package com.runemagic.gw2tools.gui.controller;
 
-import com.runemagic.gw2tools.GW2Tools;
+import java.util.Arrays;
+
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 
-import java.util.Arrays;
+import com.runemagic.gw2tools.GW2Tools;
+import com.runemagic.gw2tools.api.APIKey;
+import com.runemagic.gw2tools.api.GW2API;
+import com.runemagic.gw2tools.api.GW2APIException;
 
 public class LoginController
 {
@@ -27,6 +32,19 @@ public class LoginController
 
     public void initialize()
     {
+        txtAPIKey.textProperty().addListener((obs,ov,nv)->{
+            ObservableList<String> styleClass = txtAPIKey.getStyleClass();
+            if (!APIKey.isValid(nv))
+            {
+                styleClass.removeAll("field-ok");
+                if (!styleClass.contains("field-error")) styleClass.add("field-error");
+            }
+            else
+            {
+                styleClass.removeAll("field-error");
+                if (!styleClass.contains("field-ok")) styleClass.add("field-ok");
+            }
+        });
 
         String apiKey = GW2Tools.inst().getAppSettings().apiKey.getValue();
         if(apiKey != null && apiKey.length() > 0)
@@ -45,23 +63,26 @@ public class LoginController
     @FXML
     void onApply(ActionEvent event)
     {
-        String apiKey = txtAPIKey.getText();
-        if(apiKey == null || apiKey.length() == 0)//TODO proper validation
+        APIKey apiKey;
+        try
         {
-            //TODO error
-        }else
+            apiKey = APIKey.of(txtAPIKey.getText());
+        }
+        catch (GW2APIException e)
         {
-            GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey);
-            if(!chkbxRememberKey.isSelected())
-            {
-                GW2Tools.inst().getAppSettings().apiKey.setValue(null);
-            }
-            GW2Tools.inst().getSettingsManager().saveFXSettingsSheet(GW2Tools.inst().getAppSettings(), Arrays.asList("apiKey"));//TODO hacked saved fix!
-            GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey);
-
-            showApplication();
+            //TODO feedback
+            return;
         }
 
+        GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey.getKey());
+        if(!chkbxRememberKey.isSelected())
+        {
+            GW2Tools.inst().getAppSettings().apiKey.setValue(null);
+        }
+        GW2Tools.inst().getSettingsManager().saveFXSettingsSheet(GW2Tools.inst().getAppSettings(), Arrays.asList("apiKey"));//TODO hacked saved fix!
+        GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey.getKey());
+        GW2Tools.inst().setAccount(GW2API.inst().getAccount(apiKey));
+        showApplication();
     }
 
     private void showApplication()

@@ -313,3 +313,13 @@
     -fx-font-family: FontAwesome;
     -fx-font-size: 12;
 }
+
+/*Red border for field*/
+.field-error {
+    -fx-border-color: red;
+}
+
+/*Green border for field*/
+.field-ok {
+    -fx-border-color: green;
+}
