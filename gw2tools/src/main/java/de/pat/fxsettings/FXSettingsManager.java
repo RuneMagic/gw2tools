@@ -292,8 +292,6 @@ public class FXSettingsManager
 
             if(!ant.saveSystemChanges())
             {
-                System.out.println(field.getName());
-                System.out.println(changes);
                 if(changes == null || (!changes.contains(field.getName()) && !changes.contains(ant.displayName())))continue;
             }
 
