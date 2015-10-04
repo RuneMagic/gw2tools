@@ -39,10 +39,10 @@ public class TokenInfo extends AuthenticatedAPIObject
 		super(source, apiKey);
 
 		permissions.addListener((SetChangeListener<GW2APIPermission>) change -> {
-			permissionMap.clear();//TODO modify only the changed permissions
-			for (GW2APIPermission perm:permissions)
+
+			for (GW2APIPermission perm:GW2APIPermission.values())
 			{
-				getPermissionProperty(perm).set(true);
+				getPermissionProperty(perm).set(permissions.contains(perm));
 			}
 		});
 	}
