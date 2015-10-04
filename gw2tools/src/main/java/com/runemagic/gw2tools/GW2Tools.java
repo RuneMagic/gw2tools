@@ -161,10 +161,11 @@ public class GW2Tools extends Application
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
 
+		Scene mainScene = new Scene(loadFXML("loginView.fxml"));
+
 		initToolBar();
 		initViews();
 
-		Scene mainScene=new Scene(app.getRootPane());
 		addMainCSS(mainScene);
 		primaryStage.setScene(mainScene);
 		primaryStage.setTitle("GW2Tools");
@@ -213,6 +214,21 @@ public class GW2Tools extends Application
 	public Stage getPrimaryStage()
 	{
 		return primaryStage;
+	}
+
+	public ApplicationManager getApp()
+	{
+		return app;
+	}
+
+	public FXSettingsManager getSettingsManager()
+	{
+		return settings;
+	}
+
+	public ApplicationSettings getAppSettings()
+	{
+		return appSettings;
 	}
 
 	public static void showAndWait(Parent root)

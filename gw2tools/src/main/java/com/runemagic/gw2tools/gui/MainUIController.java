@@ -1,5 +1,6 @@
 package com.runemagic.gw2tools.gui;
 
+import com.runemagic.gw2tools.GW2Tools;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -42,18 +43,20 @@ public class MainUIController
 		initCharacterTableColumns();
 		lstPermissions.getItems().addAll(GW2APIPermission.values());
 
-		acc.addListener((obs, oldVal, newVal)->{
+		acc.addListener((obs, oldVal, newVal) -> {
 			pbUpdateProgress.progressProperty().unbind();
 			pbUpdateProgress.progressProperty().bind(newVal.updateProgressProperty());
 
 			tblCharacters.setItems(newVal.getCharacters());
 
-			lstPermissions.setCellFactory(list ->{
-				CheckBoxListCell<GW2APIPermission> cell=new CheckBoxListCell<>((perm) -> newVal.getAPIKeyInfo().permissionProperty(perm));
+			lstPermissions.setCellFactory(list -> {
+				CheckBoxListCell<GW2APIPermission> cell = new CheckBoxListCell<>((perm) -> newVal.getAPIKeyInfo().permissionProperty(perm));
 				cell.setDisable(true);//TODO find a non-quick&dirty solution
 				return cell;
 			});
 		});
+
+		txtAPIKey.setVisible(false);//no longer needed
 	}
 
 	private void initCharacterTableColumns()
@@ -71,7 +74,7 @@ public class MainUIController
 
 	@FXML protected void applyAPIKey(ActionEvent event)
 	{
-		String key=txtAPIKey.getText();
+		String key= GW2Tools.inst().getAppSettings().apiKey.getValue();
 		//TODO validation (esp. against injection)
 		GW2Account acct=GW2API.inst().getAccount(key);
 		acc.set(acct);

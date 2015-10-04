@@ -11,8 +11,12 @@ import javafx.scene.control.ToolBar;
 public class ApplicationSettings extends AbstractFXSettingsSheet
 {
 
-    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "GW2 API", displayName = "API Key")
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "GW2 API", displayName = "API Key", saveSystemChanges = false)
     public SimpleStringProperty apiKey;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "GW2 API", displayName = "test")
+    public SimpleStringProperty test;
+
 
     public ApplicationSettings()
     {
