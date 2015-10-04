@@ -20,7 +20,7 @@ public class GW2API
 		return instance;
 	}
 
-	public TokenInfo getTokenInfo(String apiKey)
+	public TokenInfo getTokenInfo(String apiKey) throws GW2APIException
 	{
 		return getTokenInfo(APIKey.of(apiKey));
 	}
@@ -30,7 +30,7 @@ public class GW2API
 		return update(new TokenInfo(source, apiKey));
 	}
 
-	public GW2Account getAccount(String apiKey)
+	public GW2Account getAccount(String apiKey) throws GW2APIException
 	{
 		return getAccount(APIKey.of(apiKey));
 	}
@@ -40,7 +40,7 @@ public class GW2API
 		return update(new GW2Account(source, apiKey));
 	}
 
-	public GW2Character getCharacter(String name, String apiKey)
+	public GW2Character getCharacter(String name, String apiKey) throws GW2APIException
 	{
 		return getCharacter(name, APIKey.of(apiKey));
 	}
