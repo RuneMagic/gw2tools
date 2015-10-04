@@ -24,5 +24,14 @@
     <orderEntry type="library" exported="" name="Gradle: com.google.code.gson:gson:2.3.1" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.controlsfx:controlsfx:8.20.8" level="project" />
     <orderEntry type="library" exported="" name="Gradle: org.controlsfx:openjfx-dialogs:1.0.2" level="project" />
+    <orderEntry type="module-library" exported="">
+      <library name="Gradle: Undecorator">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/libs/Undecorator.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

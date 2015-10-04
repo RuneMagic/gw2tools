@@ -66,7 +66,7 @@ public class LoginController
 
     private void showApplication()
     {
-        GW2Tools.inst().getPrimaryStage().getScene().setRoot(GW2Tools.inst().getApp().getRootPane());
+        GW2Tools.inst().getApplicationPane().setCenter(GW2Tools.inst().getApp().getRootPane());
     }
 
 }

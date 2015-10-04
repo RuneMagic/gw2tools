@@ -55,7 +55,7 @@ public class ApplicationManager
         navList.setMaxWidth(125);
 
         toolBar = new HBox();
-        BorderPane.setMargin(toolBar, new Insets(0, 0, 5, 0));
+        BorderPane.setMargin(toolBar, new Insets(25, 0, 5, 0));
         toolBar.setPadding(globalInset);
     }
 

@@ -15,14 +15,20 @@ import de.pat.fxsettings.FXSettingsSerializerType;
 import de.pat.fxsettings.FXSettingsSheetPane;
 import de.pat.fxsettings.serializer.PreferencesFXSettingsSerializer;
 import de.pat.util.javafx.ViewBoundsSerializer;
+import insidefx.undecorator.Undecorator;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +42,7 @@ public class GW2Tools extends Application
 
 	private static GW2Tools gw2tool;
 	private Stage primaryStage;
+	private BorderPane applicationPane;
 
 	private ResourceManager res;
 	private ThreadManager threads;
@@ -163,15 +170,53 @@ public class GW2Tools extends Application
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
 
-		Scene mainScene = new Scene(loadFXML("loginView.fxml"), 1000, 700);
+		primaryStage.setTitle("GW2Tools");
+		applicationPane = new BorderPane();
+		applicationPane.getStyleClass().add("root-window");
+
+		Undecorator undecorator = new Undecorator(primaryStage, applicationPane);
+		undecorator.getStylesheets().add("skin/undecorator.css");
+
+		Scene mainScene = new Scene(undecorator, 1000, 700, Color.WHITE);
+		mainScene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+		primaryStage.initStyle(StageStyle.TRANSPARENT);
+		undecorator.installAccelerators(mainScene);
+
+		AnchorPane bottom = new AnchorPane();
+		bottom.setPickOnBounds(false);
+		bottom.setPrefHeight(15);
+		bottom.setPrefWidth(640);
+		bottom.setStyle("-fx-background-color: #333333");
+		if (!undecorator.maximizeProperty().get() && !undecorator.fullscreenProperty().get())
+			applicationPane.setBottom(bottom);
+
+		ChangeListener<Boolean> barToggle = (e, oldValue, newValue) -> {
+			if (!undecorator.maximizeProperty().get() && !undecorator.fullscreenProperty().get())
+			{
+				applicationPane.setBottom(bottom);
+			} else
+			{
+				applicationPane.setBottom(null);
+			}
+		};
+		undecorator.maximizeProperty().addListener(barToggle);
+		undecorator.fullscreenProperty().addListener(barToggle);
+
+		AnchorPane top = new AnchorPane();
+		top.setPickOnBounds(false);
+		top.setPrefWidth(640);
+		top.setStyle("-fx-background-color: #333333");
+		undecorator.setAsStageDraggable(primaryStage, top);
 
 		initToolBar();
 		initViews();
 
+		applicationPane.setCenter(loadFXML("loginView.fxml"));
+
+
 		addMainCSS(mainScene);
-		new ViewBoundsSerializer().switchView(primaryStage, Reference.REGISTRY_WINDOW_BOUNDS, true);
+		new ViewBoundsSerializer().switchView(primaryStage, Reference.REGISTRY_WINDOW_BOUNDS, undecorator.maximizeProperty(), true);
 		primaryStage.setScene(mainScene);
-		primaryStage.setTitle("GW2Tools");
 		primaryStage.show();
 	}
 
@@ -217,6 +262,11 @@ public class GW2Tools extends Application
 	public Stage getPrimaryStage()
 	{
 		return primaryStage;
+	}
+
+	public BorderPane getApplicationPane()
+	{
+		return applicationPane;
 	}
 
 	public ApplicationManager getApp()
