@@ -6,12 +6,18 @@ import com.faelar.util.javafx.FontIcon;
 import com.faelar.util.javafx.Icons;
 import com.faelar.util.javafx.JFXTools;
 import com.runemagic.gw2tools.gui.ApplicationManager;
+import com.runemagic.gw2tools.settings.ApplicationSettings;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
 import com.runemagic.gw2tools.util.ThreadManager;
+import de.pat.fxsettings.FXSettingsManager;
+import de.pat.fxsettings.FXSettingsSerializerType;
+import de.pat.fxsettings.FXSettingsSheetPane;
+import de.pat.fxsettings.serializer.PreferencesFXSettingsSerializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -31,15 +37,22 @@ public class GW2Tools extends Application
 
 	private ResourceManager res;
 	private ThreadManager threads;
+	private FXSettingsManager settings;
 	private ApplicationManager app;
+
+	private ApplicationSettings appSettings;
+	private FXSettingsSheetPane appSettingsSheet;
 
 	public GW2Tools() throws Exception
 	{
 		if (gw2tool!=null) throw new Exception();//TODO better exception
 		gw2tool=this;
-		//conf = new INIConfigManager(new File("config"));
 		res=new ResourceManager("com/runemagic/gw2tools/res/", "res");
 		threads=new GlobalPoolThreadManager();
+
+		settings = new FXSettingsManager();
+		settings.registerSerializer(FXSettingsSerializerType.FX_PREFERENCES, new PreferencesFXSettingsSerializer());
+
 		setLogLevel(Level.INFO);//TODO configurable
 	}
 
@@ -47,7 +60,6 @@ public class GW2Tools extends Application
 	{
 		((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.runemagic.gw2tools")).setLevel(level);
 	}
-
 
 
 	@Override
@@ -61,7 +73,6 @@ public class GW2Tools extends Application
 	public void saveAll()
 	{
 		saveGUI();
-		//conf.save();
 	}
 
 	public static GW2Tools inst()
@@ -74,15 +85,6 @@ public class GW2Tools extends Application
 		return log;
 	}
 
-	/*public ConfigInterface getConfig(String section)
-	{
-		return conf.getSection(section);
-	}
-
-	public ConfigInterface getConfig()
-	{
-		return conf;
-	}*/
 
 	public static Image getImageResource(String name)
 	{
@@ -112,6 +114,8 @@ public class GW2Tools extends Application
 		app = new ApplicationManager();
 		try
 		{
+			initSettings();
+
 			this.primaryStage=primaryStage;
 			initPrimaryStage(primaryStage);
 		}
@@ -147,6 +151,12 @@ public class GW2Tools extends Application
 		return ret;
 	}
 
+	private void initSettings()
+	{
+		settings.loadFXSettingsSheet(appSettings = new ApplicationSettings());
+		appSettingsSheet = settings.buildFXSettingsSheet(appSettings);
+	}
+
 	private void initPrimaryStage(Stage primaryStage) throws IOException
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
@@ -166,7 +176,12 @@ public class GW2Tools extends Application
 	{
 		HBox tool = app.getToolBar();
 
-		tool.getChildren().add(Icons.createIconButton(FontIcon.GEAR, "Settings", 18));
+		Button btnSettings = Icons.createIconButton(FontIcon.GEAR, "Settings", 18);
+		btnSettings.setOnAction((e) -> {
+			app.setOverlay("Application Settings", appSettingsSheet, Icons.createIconLabel(FontIcon.GEAR), appSettingsSheet.isShowingProperty());
+		});
+		tool.getChildren().add(btnSettings);
+
 	}
 
 	private void initViews() throws IOException
