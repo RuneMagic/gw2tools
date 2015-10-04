@@ -258,6 +258,7 @@ public class GW2Tools extends Application
 	private void initViews() throws IOException
 	{
 		app.addView("Main", loadFXML("main.fxml"), Icons.createIconLabel(FontIcon.BAR_CHART), true);
+		app.addView("About", loadFXML("about.fxml"), Icons.createIconLabel(FontIcon.INFO_CIRCLE, 20), false);
 	}
 
 	private void saveGUI()
