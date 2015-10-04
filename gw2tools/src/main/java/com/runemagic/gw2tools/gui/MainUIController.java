@@ -1,6 +1,5 @@
 package com.runemagic.gw2tools.gui;
 
-import com.runemagic.gw2tools.GW2Tools;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
@@ -13,7 +12,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import com.runemagic.gw2tools.GW2Tools;
 import com.runemagic.gw2tools.api.GW2API;
+import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.account.GW2APIPermission;
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.api.character.GW2Character;
@@ -55,8 +56,6 @@ public class MainUIController
 				return cell;
 			});
 		});
-
-		txtAPIKey.setVisible(false);//no longer needed
 	}
 
 	private void initCharacterTableColumns()
@@ -74,11 +73,15 @@ public class MainUIController
 
 	@FXML protected void applyAPIKey(ActionEvent event)
 	{
-		String key= GW2Tools.inst().getAppSettings().apiKey.getValue();
-		//TODO validation (esp. against injection)
-		GW2Account acct=GW2API.inst().getAccount(key);
-		acc.set(acct);
-		acct.update();
+		String key=GW2Tools.inst().getAppSettings().apiKey.getValue();
+		try
+		{
+			acc.set(GW2API.inst().getAccount(key));
+		}
+		catch (GW2APIException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 }
