@@ -19,17 +19,16 @@ import javafx.beans.property.StringProperty;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.runemagic.gw2tools.api.APIKeyHolder;
-import com.runemagic.gw2tools.api.AbstractAPIObject;
+import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
+import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 import com.runemagic.gw2tools.util.StringTools;
 
-public class GW2Character extends AbstractAPIObject implements APIKeyHolder
+public class GW2Character extends AuthenticatedAPIObject
 {
 	private final static String API_RESOURCE_CHARACTERS="characters";
 
-	private StringProperty apiKey=new SimpleStringProperty();
 	private StringProperty name=new SimpleStringProperty();
 	private ObjectProperty<CharacterRace> race=new SimpleObjectProperty<>();
 	private ObjectProperty<CharacterGender> gender=new SimpleObjectProperty<>();
@@ -47,10 +46,9 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 	private ObjectProperty<CharacterEquipment> equipment=new SimpleObjectProperty<>();
 	//TODO inventory
 
-	public GW2Character(GW2APISource source, String name, String apiKey)
+	public GW2Character(GW2APISource source, String name, APIKey apiKey)
 	{
-		super(source);
-		this.apiKey.set(apiKey);
+		super(source, apiKey);
 		this.name.set(name);
 		buildPVE.set(new CharacterBuild());
 		buildPVP.set(new CharacterBuild());
@@ -116,11 +114,6 @@ public class GW2Character extends AbstractAPIObject implements APIKeyHolder
 	private CharacterTrait readTrait(int id)
 	{
 		return CharacterTrait.of(id);
-	}
-
-	public String getAPIKey()
-	{
-		return apiKey.get();
 	}
 
 	public String getName()

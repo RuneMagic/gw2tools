@@ -51,12 +51,22 @@ public class GW2API implements GW2APISource
 
 	public GW2Account getAccount(String apiKey)
 	{
+		return getAccount(new APIKey(apiKey));
+	}
+
+	public GW2Account getAccount(APIKey apiKey)
+	{
 		GW2Account acc=new GW2Account(this, apiKey);
 		acc.update();
 		return acc;
 	}
 
 	public GW2Character getCharacter(String name, String apiKey)
+	{
+		return getCharacter(name, new APIKey(apiKey));
+	}
+
+	public GW2Character getCharacter(String name, APIKey apiKey)
 	{
 		GW2Character character=new GW2Character(this, name, apiKey);
 		character.update();

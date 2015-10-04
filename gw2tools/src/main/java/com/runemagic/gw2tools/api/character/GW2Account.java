@@ -6,34 +6,25 @@ import java.util.List;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
 import org.json.JSONArray;
 
-import com.runemagic.gw2tools.api.APIKeyHolder;
-import com.runemagic.gw2tools.api.AbstractAPIObject;
+import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
+import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 
-public class GW2Account extends AbstractAPIObject implements APIKeyHolder
+public class GW2Account extends AuthenticatedAPIObject
 {
 	private final static String API_RESOURCE_CHARACTERS="characters";
 
 	private ListProperty<GW2Character> characters=new SimpleListProperty<>(FXCollections.observableArrayList());
-	private StringProperty apiKey=new SimpleStringProperty();
 	//TODO more
 
-	public GW2Account(GW2APISource source, String apiKey)
+	public GW2Account(GW2APISource source, APIKey apiKey)
 	{
-		super(source);
-		this.apiKey.set(apiKey);
-	}
-
-	public String getAPIKey()
-	{
-		return apiKey.get();
+		super(source, apiKey);
 	}
 
 	public ListProperty<GW2Character> getCharacters()
@@ -76,7 +67,7 @@ public class GW2Account extends AbstractAPIObject implements APIKeyHolder
 
 		for (String charName:charNames)
 		{
-			GW2Character character=new GW2Character(source, charName, apiKey.get());
+			GW2Character character=new GW2Character(source, charName, getAPIKey());
 			characters.add(character);//TODO keep original order
 			character.update();
 		}
