@@ -9,6 +9,10 @@ import javafx.scene.control.Label;
 public final class Icons
 {
 
+
+	private static final String STYLE_NORMAL = "-fx-background-color: transparent; -fx-padding: 5, 5, 5, 5;";
+	private static final String STYLE_PRESSED = "-fx-background-color: transparent; -fx-padding: 6 4 4 6;";
+
 	private Icons()
 	{
 
@@ -51,7 +55,13 @@ public final class Icons
 
 	public static Button createIconButton(FontIcon icon, String text, int iconSize)
 	{
-		return new Button(text, createIconLabel(icon, iconSize));
+		Button btn = new Button(text, createIconLabel(icon, iconSize));
+
+		btn.setStyle(STYLE_NORMAL);
+		btn.setOnMousePressed(event -> btn.setStyle(STYLE_PRESSED));
+		btn.setOnMouseReleased(event -> btn.setStyle(STYLE_NORMAL));
+
+		return btn;
 	}
 
 	public static Label createIconLabel(FontIcon icon)
