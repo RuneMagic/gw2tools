@@ -6,6 +6,7 @@ import com.faelar.util.javafx.FontIcon;
 import com.faelar.util.javafx.Icons;
 import com.faelar.util.javafx.JFXTools;
 import com.runemagic.gw2tools.gui.ApplicationManager;
+import com.runemagic.gw2tools.reference.Reference;
 import com.runemagic.gw2tools.settings.ApplicationSettings;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
 import com.runemagic.gw2tools.util.ThreadManager;
@@ -13,6 +14,7 @@ import de.pat.fxsettings.FXSettingsManager;
 import de.pat.fxsettings.FXSettingsSerializerType;
 import de.pat.fxsettings.FXSettingsSheetPane;
 import de.pat.fxsettings.serializer.PreferencesFXSettingsSerializer;
+import de.pat.util.javafx.ViewBoundsSerializer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -161,12 +163,13 @@ public class GW2Tools extends Application
 	{
 		Font.loadFont(res.getResourceURL("fonts/fontawesome.otf").toExternalForm(), 12);
 
-		Scene mainScene = new Scene(loadFXML("loginView.fxml"));
+		Scene mainScene = new Scene(loadFXML("loginView.fxml"), 1000, 700);
 
 		initToolBar();
 		initViews();
 
 		addMainCSS(mainScene);
+		new ViewBoundsSerializer().switchView(primaryStage, Reference.REGISTRY_WINDOW_BOUNDS, true);
 		primaryStage.setScene(mainScene);
 		primaryStage.setTitle("GW2Tools");
 		primaryStage.show();
