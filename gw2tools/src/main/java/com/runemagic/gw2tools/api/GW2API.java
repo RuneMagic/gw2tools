@@ -1,22 +1,17 @@
 package com.runemagic.gw2tools.api;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-
 import com.runemagic.gw2tools.api.character.GW2Account;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
-public class GW2API implements GW2APISource
+public class GW2API
 {
-	private final static String API_URL_V2="https://api.guildwars2.com/v2";
-
 	private final static GW2API instance=new GW2API();
+
+	private final GW2APISource source;
 
 	public GW2API()
 	{
-
+		source=new DefaultGW2APISource();
 	}
 
 	public static GW2API inst()
@@ -24,30 +19,6 @@ public class GW2API implements GW2APISource
 		return instance;
 	}
 
-	private String appendAccessToken(String url, APIKeyHolder keyHolder)
-	{
-		return url+"?access_token="+keyHolder.getAPIKey();
-	}
-
-	@Override
-	public String readAPIv2Resource(String resource, APIKeyHolder keyHolder) throws GW2APIException
-	{
-		return readAPIv2Resource(appendAccessToken(resource, keyHolder));
-	}
-
-	@Override
-	public String readAPIv2Resource(String resource) throws GW2APIException
-	{
-		try
-		{
-			//TODO basic validation
-			return readUrl(API_URL_V2+"/"+resource);
-		}
-		catch (IOException e)
-		{
-			throw new GW2APIException(e);
-		}
-	}
 
 	public GW2Account getAccount(String apiKey)
 	{
@@ -56,7 +27,7 @@ public class GW2API implements GW2APISource
 
 	public GW2Account getAccount(APIKey apiKey)
 	{
-		GW2Account acc=new GW2Account(this, apiKey);
+		GW2Account acc=new GW2Account(source, apiKey);
 		acc.update();
 		return acc;
 	}
@@ -68,20 +39,8 @@ public class GW2API implements GW2APISource
 
 	public GW2Character getCharacter(String name, APIKey apiKey)
 	{
-		GW2Character character=new GW2Character(this, name, apiKey);
+		GW2Character character=new GW2Character(source, name, apiKey);
 		character.update();
 		return character;
-	}
-
-	private String readUrl(String urlString) throws IOException
-	{
-		try (BufferedReader reader= new BufferedReader(new InputStreamReader((new URL(urlString)).openStream()))) {
-			StringBuffer buffer = new StringBuffer();
-			int read;
-			char[] chars = new char[1024];
-			while ((read = reader.read(chars)) != -1)
-				buffer.append(chars, 0, read);
-			return buffer.toString();
-		}
 	}
 }
