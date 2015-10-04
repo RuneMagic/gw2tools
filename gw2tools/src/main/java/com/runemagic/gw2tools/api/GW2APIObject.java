@@ -1,5 +1,6 @@
 package com.runemagic.gw2tools.api;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyFloatProperty;
 
@@ -43,4 +44,8 @@ public interface GW2APIObject
 	ReadOnlyFloatProperty updateProgressProperty();
 
 	ReadOnlyBooleanProperty updatingProperty();
+
+	boolean isValid();
+
+	BooleanProperty validProperty();
 }

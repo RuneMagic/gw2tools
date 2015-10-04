@@ -20,6 +20,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 	private FloatProperty updateProgress=new SimpleFloatProperty();
 	private BooleanProperty updating=new SimpleBooleanProperty();
+	private BooleanProperty valid=new SimpleBooleanProperty();
 	protected final GW2APISource source;
 	//private Map<String, Property> fields=new HashMap<>();
 	private Future<?> task;
@@ -72,10 +73,12 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			try
 			{
 				updateImpl();
+				Platform.runLater(() -> valid.set(true));
 			}
 			catch (GW2APIException e)
 			{
 				e.printStackTrace();//TODO proper exception handling
+				Platform.runLater(() -> valid.set(false));
 			}
 			finally
 			{
@@ -86,6 +89,16 @@ public abstract class AbstractAPIObject implements GW2APIObject
 				});
 			}
 		});
+	}
+
+	public boolean isValid()
+	{
+		return valid.get();
+	}
+
+	public BooleanProperty validProperty()
+	{
+		return valid;
 	}
 
 	@Override
