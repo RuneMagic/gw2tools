@@ -1,16 +1,16 @@
 package de.pat.fxsettings;
 
 import javafx.geometry.Insets;
-import javafx.scene.image.Image;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 public class FXSettingsSheetPane extends BorderPane
 {
     private String name;
-    private Image image;
+    private Label image;
 
 
-    public FXSettingsSheetPane(String name, Image image)
+    public FXSettingsSheetPane(String name, Label image)
     {
         super();
         this.name = name;
@@ -18,7 +18,7 @@ public class FXSettingsSheetPane extends BorderPane
         setPadding(new Insets(10));
     }
 
-    public Image getImage()
+    public Label getImage()
     {
         return image;
     }

@@ -1,12 +1,13 @@
 package de.pat.fxsettings;
 
 
+import com.faelar.util.javafx.FontIcon;
+import com.faelar.util.javafx.Icons;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -94,8 +95,7 @@ public class FXCombinedSheetsPane extends BorderPane
                                 Label text = new Label(t.getName());
                                 if (t.getImage() != null)
                                 {
-                                    ImageView image = new ImageView(t.getImage());
-                                    content.getChildren().add(image);
+                                    content.getChildren().add(t.getImage());
                                 }
                                 content.getChildren().add(text);
                                 setGraphic(content);
@@ -112,6 +112,7 @@ public class FXCombinedSheetsPane extends BorderPane
         HBox controls = new HBox();
         controls.setAlignment(Pos.CENTER_RIGHT);
 
+        Button close = Icons.createIconButton(FontIcon.TIMES, 18);
 
         HBox spacer = new HBox();
         spacer.setMinHeight(0);
@@ -122,8 +123,38 @@ public class FXCombinedSheetsPane extends BorderPane
         title.setFill(Color.web("#C7C7C7"));
         title.setFont(Font.font("Arial", FontWeight.BOLD, FontPosture.ITALIC, 15));
 
+        close.setOnAction((e) -> {
+            //TODO fix
+//            PUTLayout active = PUT.inst().getActiveLayout();
+//            if (active == null)
+//            {
+//                if (PUT.inst().getContentPane().getCenter().equals(this))
+//                {
+//                    PUT.inst().handleLayoutChange(null, null);
+//                } else
+//                {
+//                    PUT.inst().getContentPane().setCenter(this);
+//                }
+//            } else
+//            {
+//                if (active.getRootWindow().getMenuPane().getCenter() != null)
+//                {
+//                    active.getRootWindow().setMenu(null);
+//                } else
+//                {
+//                    if (active.getRootWindow().isEditorMode())
+//                    {
+//                        active.getRootWindow().setEditorMode(active.getRootWindow(), false);
+//                    }
+//                    active.getRootWindow().setMenu(this);
+//                }
+//            }
+        });
 
-        controls.getChildren().addAll(title, spacer);
+        Labeled image = Icons.createIconLabel(FontIcon.GEAR);
+        HBox.setMargin(image, new Insets(0, 0, 0, 15));
+
+        controls.getChildren().addAll(image, title, spacer, close);
         setTop(controls);
         setStyle("-fx-background-color: rgba(41, 41, 41, 1)");
     }

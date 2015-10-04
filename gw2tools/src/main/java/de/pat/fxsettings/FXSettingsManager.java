@@ -20,7 +20,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -48,7 +47,12 @@ public class FXSettingsManager
         serrializers.put(type, serializer);
     }
 
-    public FXSettingsSheetPane buildFXSettingsSheet(FXSettingsSheet sheet, Image image)
+    public FXSettingsSheetPane buildFXSettingsSheet(FXSettingsSheet sheet)
+    {
+        return buildFXSettingsSheet(sheet, null);
+    }
+
+    public FXSettingsSheetPane buildFXSettingsSheet(FXSettingsSheet sheet, Label image)
     {
         ListMultimap<String, FXSettingsModule> categories = ArrayListMultimap.create();
         Map<String, TitledPane> categoryNodes = new HashMap<>();
