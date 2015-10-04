@@ -1,22 +1,12 @@
 package com.runemagic.gw2tools;
 
-import ch.qos.logback.classic.Level;
-import com.faelar.util.io.ResourceManager;
-import com.faelar.util.javafx.FontIcon;
-import com.faelar.util.javafx.Icons;
-import com.faelar.util.javafx.JFXTools;
-import com.runemagic.gw2tools.gui.ApplicationManager;
-import com.runemagic.gw2tools.reference.Reference;
-import com.runemagic.gw2tools.settings.ApplicationSettings;
-import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
-import com.runemagic.gw2tools.util.ThreadManager;
-import de.pat.fxsettings.FXSettingsManager;
-import de.pat.fxsettings.FXSettingsSerializerType;
-import de.pat.fxsettings.FXSettingsSheetPane;
-import de.pat.fxsettings.serializer.PreferencesFXSettingsSerializer;
-import de.pat.util.javafx.ViewBoundsSerializer;
-import insidefx.undecorator.Undecorator;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
+
 import javafx.application.Application;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,12 +19,28 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
+import com.faelar.util.io.ResourceManager;
+import com.faelar.util.javafx.FontIcon;
+import com.faelar.util.javafx.Icons;
+import com.faelar.util.javafx.JFXTools;
+import com.runemagic.gw2tools.api.account.GW2Account;
+import com.runemagic.gw2tools.gui.ApplicationManager;
+import com.runemagic.gw2tools.reference.Reference;
+import com.runemagic.gw2tools.settings.ApplicationSettings;
+import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
+import com.runemagic.gw2tools.util.ThreadManager;
+
+import ch.qos.logback.classic.Level;
+import de.pat.fxsettings.FXSettingsManager;
+import de.pat.fxsettings.FXSettingsSerializerType;
+import de.pat.fxsettings.FXSettingsSheetPane;
+import de.pat.fxsettings.serializer.PreferencesFXSettingsSerializer;
+import de.pat.util.javafx.ViewBoundsSerializer;
+import insidefx.undecorator.Undecorator;
 
 public class GW2Tools extends Application
 {
@@ -51,6 +57,8 @@ public class GW2Tools extends Application
 
 	private ApplicationSettings appSettings;
 	private FXSettingsSheetPane appSettingsSheet;
+
+	private ObjectProperty<GW2Account> account=new SimpleObjectProperty<>();
 
 	public GW2Tools() throws Exception
 	{
@@ -70,6 +78,20 @@ public class GW2Tools extends Application
 		((ch.qos.logback.classic.Logger) LoggerFactory.getLogger("com.runemagic.gw2tools")).setLevel(level);
 	}
 
+	public GW2Account getAccount()
+	{
+		return account.get();
+	}
+
+	public ObjectProperty<GW2Account> accountProperty()
+	{
+		return account;
+	}
+
+	public void setAccount(GW2Account account)
+	{
+		this.account.set(account);
+	}
 
 	@Override
 	public void stop() throws Exception
