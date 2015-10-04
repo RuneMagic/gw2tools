@@ -1,6 +1,7 @@
 package com.runemagic.gw2tools.api;
 
-import com.runemagic.gw2tools.api.character.GW2Account;
+import com.runemagic.gw2tools.api.account.GW2Account;
+import com.runemagic.gw2tools.api.account.TokenInfo;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class GW2API
@@ -19,28 +20,39 @@ public class GW2API
 		return instance;
 	}
 
+	public TokenInfo getTokenInfo(String apiKey)
+	{
+		return getTokenInfo(APIKey.of(apiKey));
+	}
+
+	public TokenInfo getTokenInfo(APIKey apiKey)
+	{
+		return update(new TokenInfo(source, apiKey));
+	}
 
 	public GW2Account getAccount(String apiKey)
 	{
-		return getAccount(new APIKey(apiKey));
+		return getAccount(APIKey.of(apiKey));
 	}
 
 	public GW2Account getAccount(APIKey apiKey)
 	{
-		GW2Account acc=new GW2Account(source, apiKey);
-		acc.update();
-		return acc;
+		return update(new GW2Account(source, apiKey));
 	}
 
 	public GW2Character getCharacter(String name, String apiKey)
 	{
-		return getCharacter(name, new APIKey(apiKey));
+		return getCharacter(name, APIKey.of(apiKey));
 	}
 
 	public GW2Character getCharacter(String name, APIKey apiKey)
 	{
-		GW2Character character=new GW2Character(source, name, apiKey);
-		character.update();
-		return character;
+		return update(new GW2Character(source, name, apiKey));
+	}
+
+	private <T extends GW2APIObject> T update(T obj)
+	{
+		obj.update();
+		return obj;
 	}
 }

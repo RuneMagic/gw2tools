@@ -11,6 +11,12 @@ public final class APIKey implements Comparable<APIKey>
 		this.key = key;
 	}
 
+	public static APIKey of(String apiKey)
+	{
+		//TODO validation
+		return new APIKey(apiKey);
+	}
+
 	public String getKey()
 	{
 		return key;

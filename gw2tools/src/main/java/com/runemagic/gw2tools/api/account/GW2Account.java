@@ -1,25 +1,27 @@
-package com.runemagic.gw2tools.api.character;
+package com.runemagic.gw2tools.api.account;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 
 import org.json.JSONArray;
 
 import com.runemagic.gw2tools.api.APIKey;
+import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
-import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
+import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class GW2Account extends AuthenticatedAPIObject
 {
 	private final static String API_RESOURCE_CHARACTERS="characters";
 
-	private ListProperty<GW2Character> characters=new SimpleListProperty<>(FXCollections.observableArrayList());
+	private ListProperty<GW2Character> characters=new SimpleListProperty<>(FXCollections.observableArrayList());//TODO unmodifiable list
 	//TODO more
 
 	public GW2Account(GW2APISource source, APIKey apiKey)
@@ -27,7 +29,7 @@ public class GW2Account extends AuthenticatedAPIObject
 		super(source, apiKey);
 	}
 
-	public ListProperty<GW2Character> getCharacters()
+	public ReadOnlyListProperty<GW2Character> getCharacters()
 	{
 		return characters;
 	}

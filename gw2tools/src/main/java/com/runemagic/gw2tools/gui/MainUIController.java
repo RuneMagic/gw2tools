@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import com.runemagic.gw2tools.api.GW2API;
-import com.runemagic.gw2tools.api.character.GW2Account;
+import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class MainUIController
