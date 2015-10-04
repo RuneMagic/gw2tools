@@ -1,25 +1,22 @@
 package com.runemagic.gw2tools;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URL;
-
+import ch.qos.logback.classic.Level;
+import com.faelar.util.io.ResourceManager;
+import com.faelar.util.javafx.JFXTools;
+import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
+import com.runemagic.gw2tools.util.ThreadManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.faelar.util.io.ResourceManager;
-import com.faelar.util.javafx.JFXTools;
-import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
-import com.runemagic.gw2tools.util.ThreadManager;
-
-import ch.qos.logback.classic.Level;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
 
 public class GW2Tools extends Application
 {
@@ -65,6 +62,11 @@ public class GW2Tools extends Application
 	public static GW2Tools inst()
 	{
 		return gw2tool;
+	}
+
+	public static Logger log()
+	{
+		return log;
 	}
 	/*public ConfigInterface getConfig(String section)
 	{
