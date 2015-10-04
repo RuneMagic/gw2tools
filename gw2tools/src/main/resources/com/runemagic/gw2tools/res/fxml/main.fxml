@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -37,6 +38,12 @@
                               <TableColumn fx:id="colCharAge" minWidth="0.0" text="Age" />
                               <TableColumn fx:id="colCharDeaths" prefWidth="44.0" text="Deaths" />
                           </columns>
+                                 <columnResizePolicy>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                 </columnResizePolicy>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
                         </TableView>
                      </content>
                 </Tab>

@@ -186,7 +186,7 @@
 /*
     TabPane
 */
-.tab-pane:top .tab-header-area .headers-region .tab:top {
+.tab-pane .tab-header-area .headers-region .tab {
     -fx-background-insets: 0;
     -fx-focus-color: transparent;
     -fx-pref-width: -1;
