@@ -6,6 +6,7 @@ import java.util.Map;
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.api.account.TokenInfo;
+import com.runemagic.gw2tools.api.account.World;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class GW2API
@@ -13,6 +14,7 @@ public class GW2API
 	private static final GW2API instance=new GW2API();
 
 	private final Map<String, Guild> guilds=new HashMap<>();
+	private final Map<Integer, World> worlds=new HashMap<>();
 
 	private final GW2APISource source;
 
@@ -24,6 +26,18 @@ public class GW2API
 	public static GW2API inst()
 	{
 		return instance;
+	}
+
+	public World getWorld(int id)
+	{
+		World ret=worlds.get(id);
+		//TODO validate guild id
+		if (ret==null)
+		{
+			ret=new World(source, id);
+			worlds.put(id, ret);
+		}
+		return ret;
 	}
 
 	public Guild getGuild(String id)
