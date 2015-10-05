@@ -16,9 +16,11 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
+import com.runemagic.gw2tools.api.GW2API;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 import com.runemagic.gw2tools.api.character.GW2Character;
@@ -26,6 +28,7 @@ import com.runemagic.gw2tools.api.character.GW2Character;
 public class GW2Account extends AuthenticatedAPIObject
 {
 	private final static String API_RESOURCE_CHARACTERS="characters";
+	private final static String API_RESOURCE_ACCOUNT="account";
 
 	private ListProperty<GW2Character> characters=new SimpleListProperty<>(FXCollections.observableArrayList());//TODO unmodifiable list
 	private StringProperty id=new SimpleStringProperty();
@@ -55,6 +58,30 @@ public class GW2Account extends AuthenticatedAPIObject
 
 	@Override protected void updateImpl() throws GW2APIException
 	{
+		updateAccount();
+		updateCharacters();
+	}
+
+	private void updateAccount() throws GW2APIException
+	{
+		//load account data
+		JSONObject json = new JSONObject(readAPIv2Resource(API_RESOURCE_ACCOUNT, this));
+		id.set(json.getString("id"));
+		name.set(json.getString("name"));
+		world.set(GW2API.inst().getWorld(json.getInt("world")));
+		JSONArray guildsArray=json.getJSONArray("guilds");
+		int len=guildsArray.length();
+		guilds.clear();//TODO proper update, not just reload
+		for (int i=0;i<len;i++)
+		{
+			guilds.add(GW2API.inst().getGuild(guildsArray.getString(i)));
+		}
+		created.set(Instant.parse(json.getString("created")));
+	}
+
+	private void updateCharacters() throws GW2APIException
+	{
+		//load characters
 		List<String> charNames=new ArrayList<>();
 		JSONArray json = new JSONArray(readAPIv2Resource(API_RESOURCE_CHARACTERS, this));
 		int len=json.length();
@@ -89,8 +116,6 @@ public class GW2Account extends AuthenticatedAPIObject
 			character.waitForUpdate();
 			progress(inc);
 		}
-
-		//TODO the rest
 	}
 
 	public String getId()
