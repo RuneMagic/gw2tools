@@ -218,4 +218,14 @@ public class ApplicationManager
     {
         return bottomBar;
     }
+
+    public Label getBottomStatusLabel()
+    {
+        return bottomStatusLabel;
+    }
+
+    public ProgressBar getBottomProgressBar()
+    {
+        return bottomProgressBar;
+    }
 }
