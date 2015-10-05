@@ -36,6 +36,7 @@ public class GW2API
 		{
 			ret=new World(source, id);
 			worlds.put(id, ret);
+			ret.update();//TODO better update schedule
 		}
 		return ret;
 	}
@@ -48,6 +49,7 @@ public class GW2API
 		{
 			ret=new Guild(source, id);
 			guilds.put(id, ret);
+			ret.update();//TODO better update schedule
 		}
 		return ret;
 	}
