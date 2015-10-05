@@ -1,16 +1,14 @@
 package com.runemagic.gw2tools.gui;
 
-
-import com.faelar.util.javafx.FontIcon;
-import com.faelar.util.javafx.Icons;
-import com.runemagic.gw2tools.gui.components.NavigationList;
 import javafx.beans.property.BooleanProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -21,6 +19,10 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+import com.faelar.util.javafx.FontIcon;
+import com.faelar.util.javafx.Icons;
+import com.runemagic.gw2tools.gui.components.NavigationList;
+
 public class ApplicationManager
 {
 
@@ -30,11 +32,20 @@ public class ApplicationManager
     private NavigationList navList;
     private HBox toolBar;
 
+    private AnchorPane topBar;
+    private HBox bottomBar;
+
+    private ProgressBar bottomProgressBar;
+    private Label bottomStatusLabel;
+
     public ApplicationManager()
     {
         initComponent();
         initLayout();
         initBehavior();
+
+        initTopBar();
+        initBottomBar();
     }
 
 
@@ -143,6 +154,31 @@ public class ApplicationManager
         });
     }
 
+    public void initBottomBar()
+    {
+        bottomBar = new HBox(5);
+        bottomBar.setPickOnBounds(false);
+        bottomBar.setPrefHeight(15);
+        bottomBar.setPrefWidth(640);
+        bottomBar.setStyle("-fx-background-color: #333333");
+
+        bottomProgressBar = new ProgressBar();
+        bottomProgressBar.setPrefWidth(125);
+        bottomProgressBar.setProgress(0);
+
+        bottomStatusLabel = new Label("Ready");
+        bottomStatusLabel.setStyle("-fx-text-fill: lightgrey !IMPORTANT");
+        bottomBar.getChildren().addAll(bottomProgressBar, bottomStatusLabel);
+    }
+
+    public void initTopBar()
+    {
+        topBar = new AnchorPane();
+        topBar.setPickOnBounds(false);
+        topBar.setPrefWidth(640);
+        topBar.setStyle("-fx-background-color: #333333");
+    }
+
     public void addView(String name, Parent view)
     {
         addView(name, view, null, false);
@@ -171,5 +207,15 @@ public class ApplicationManager
     public HBox getToolBar()
     {
         return toolBar;
+    }
+
+    public AnchorPane getTopBar()
+    {
+        return topBar;
+    }
+
+    public HBox getBottomBar()
+    {
+        return bottomBar;
     }
 }

@@ -1,6 +1,5 @@
 package com.runemagic.gw2tools;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -116,12 +115,6 @@ public class GW2Tools extends Application
 		return log;
 	}
 
-
-	public static Image getImageResource(String name)
-	{
-		return inst().getResourceManager().getImageResource(name);
-	}
-
 	public ResourceManager getResourceManager()
 	{
 		return res;
@@ -204,11 +197,8 @@ public class GW2Tools extends Application
 		primaryStage.initStyle(StageStyle.TRANSPARENT);
 		undecorator.installAccelerators(mainScene);
 
-		AnchorPane bottom = new AnchorPane();
-		bottom.setPickOnBounds(false);
-		bottom.setPrefHeight(15);
-		bottom.setPrefWidth(640);
-		bottom.setStyle("-fx-background-color: #333333");
+		HBox bottom = app.getBottomBar();
+
 		if (!undecorator.maximizeProperty().get() && !undecorator.fullscreenProperty().get())
 			applicationPane.setBottom(bottom);
 
@@ -224,10 +214,7 @@ public class GW2Tools extends Application
 		undecorator.maximizeProperty().addListener(barToggle);
 		undecorator.fullscreenProperty().addListener(barToggle);
 
-		AnchorPane top = new AnchorPane();
-		top.setPickOnBounds(false);
-		top.setPrefWidth(640);
-		top.setStyle("-fx-background-color: #333333");
+		AnchorPane top = app.getTopBar();
 		undecorator.setAsStageDraggable(primaryStage, top);
 
 		initToolBar();
@@ -259,8 +246,8 @@ public class GW2Tools extends Application
 
 	private void initViews() throws IOException
 	{
-		app.addView("Account", loadFXML("account.fxml"), Icons.createIconLabel(FontIcon.USER), true);
-		app.addView("Characters", loadFXML("characters.fxml"), Icons.createIconLabel(FontIcon.CHILD), false);
+		app.addView("Account", loadFXML("account.fxml"), Icons.createIconLabel(FontIcon.USER, 20), true);
+		app.addView("Characters", loadFXML("characters.fxml"), Icons.createIconLabel(FontIcon.CHILD, 20), false);
 		app.addView("About", loadFXML("about.fxml"), Icons.createIconLabel(FontIcon.INFO_CIRCLE, 20), false);
 	}
 
