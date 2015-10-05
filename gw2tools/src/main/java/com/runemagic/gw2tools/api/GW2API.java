@@ -1,12 +1,18 @@
 package com.runemagic.gw2tools.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.runemagic.gw2tools.api.account.GW2Account;
+import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.api.account.TokenInfo;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class GW2API
 {
-	private final static GW2API instance=new GW2API();
+	private static final GW2API instance=new GW2API();
+
+	private final Map<String, Guild> guilds=new HashMap<>();
 
 	private final GW2APISource source;
 
@@ -18,6 +24,18 @@ public class GW2API
 	public static GW2API inst()
 	{
 		return instance;
+	}
+
+	public Guild getGuild(String id)
+	{
+		Guild ret=guilds.get(id);
+		//TODO validate guild id
+		if (ret==null)
+		{
+			ret=new Guild(source, id);
+			guilds.put(id, ret);
+		}
+		return ret;
 	}
 
 	public TokenInfo getTokenInfo(String apiKey) throws GW2APIException
