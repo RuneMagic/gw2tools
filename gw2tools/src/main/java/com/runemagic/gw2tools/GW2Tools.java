@@ -239,6 +239,8 @@ public class GW2Tools extends Application
 		addMainCSS(mainScene);
 		new ViewBoundsSerializer().switchView(primaryStage, Reference.REGISTRY_WINDOW_BOUNDS, undecorator.maximizeProperty(), true);
 		primaryStage.setScene(mainScene);
+		primaryStage.setMinHeight(600);
+		primaryStage.setMinWidth(1000);
 		primaryStage.show();
 	}
 
