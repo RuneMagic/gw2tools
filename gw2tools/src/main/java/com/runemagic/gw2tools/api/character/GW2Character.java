@@ -20,9 +20,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.APIKey;
+import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
+import com.runemagic.gw2tools.api.GW2API;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
-import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
+import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.util.StringTools;
 
 public class GW2Character extends AuthenticatedAPIObject
@@ -34,7 +36,7 @@ public class GW2Character extends AuthenticatedAPIObject
 	private ObjectProperty<CharacterGender> gender=new SimpleObjectProperty<>();
 	private ObjectProperty<CharacterProfession> profession=new SimpleObjectProperty<>();
 	private IntegerProperty level=new SimpleIntegerProperty();
-	private StringProperty guild=new SimpleStringProperty();//TODO guild
+	private ObjectProperty<Guild> guild=new SimpleObjectProperty<>();
 	private ObjectProperty<Instant> created=new SimpleObjectProperty<>();
 	private LongProperty age=new SimpleLongProperty();
 	private StringProperty formattedAge=new SimpleStringProperty();
@@ -67,11 +69,11 @@ public class GW2Character extends AuthenticatedAPIObject
 	{
 		JSONObject json=new JSONObject(readAPIv2Resource(API_RESOURCE_CHARACTERS + "/" + getURLEncodedName(), this));
 		name.set(json.getString("name"));
-		race.set(CharacterRace.byName(json.getString("race")));//TODO exception handling
+		race.set(CharacterRace.byName(json.getString("race")));
 		gender.set(CharacterGender.byName(json.getString("gender")));
 		profession.set(CharacterProfession.byName(json.getString("profession")));
 		level.set(json.getInt("level"));
-		guild.set(json.optString("guild", null));//TODO guild parsing
+		guild.set(GW2API.inst().getGuild(json.optString("guild", null)));
 		created.set(Instant.parse(json.getString("created")));
 		age.set(json.getLong("age"));
 		deaths.set(json.getInt("deaths"));
@@ -166,12 +168,12 @@ public class GW2Character extends AuthenticatedAPIObject
 		return level;
 	}
 
-	public String getGuild()
+	public Guild getGuild()
 	{
 		return guild.get();
 	}
 
-	public ReadOnlyStringProperty guildProperty()
+	public ReadOnlyObjectProperty<Guild> guildProperty()
 	{
 		return guild;
 	}

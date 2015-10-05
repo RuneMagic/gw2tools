@@ -43,6 +43,7 @@ public class GW2API
 
 	public Guild getGuild(String id)
 	{
+		if (id==null) return null;
 		Guild ret=guilds.get(id);
 		//TODO validate guild id
 		if (ret==null)

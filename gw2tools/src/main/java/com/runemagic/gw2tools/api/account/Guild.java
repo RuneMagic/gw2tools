@@ -6,13 +6,20 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import org.json.JSONObject;
+
 import com.runemagic.gw2tools.api.AbstractAPIObject;
 import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class Guild extends AbstractAPIObject
 {
+	private final static String API_RESOURCE_GUILD="guild_details";
+
 	private StringProperty id=new SimpleStringProperty();
+	private StringProperty name=new SimpleStringProperty();
+	private StringProperty tag=new SimpleStringProperty();
+	//TODO emblem
 
 	public Guild(GW2APISource source, String id)
 	{
@@ -23,7 +30,9 @@ public class Guild extends AbstractAPIObject
 	@Override
 	protected void updateImpl() throws GW2APIException
 	{
-		//TODO needs v1 API
+		JSONObject json = new JSONObject(readAPIv1Resource(API_RESOURCE_GUILD, "guild_id", id.get()));
+		name.set(json.getString("guild_name"));
+		tag.set(json.getString("tag"));
 	}
 
 	public String getID()
@@ -34,6 +43,26 @@ public class Guild extends AbstractAPIObject
 	public ReadOnlyStringProperty idProperty()
 	{
 		return id;
+	}
+
+	public String getName()
+	{
+		return name.get();
+	}
+
+	public ReadOnlyStringProperty nameProperty()
+	{
+		return name;
+	}
+
+	public String getTag()
+	{
+		return tag.get();
+	}
+
+	public ReadOnlyStringProperty tagProperty()
+	{
+		return tag;
 	}
 
 	@Override public boolean equals(Object o)
@@ -51,8 +80,8 @@ public class Guild extends AbstractAPIObject
 
 	@Override public String toString()//TODO placeholder
 	{
-		return "Guild{" +
-				"id=" + id +
-				'}';
+		String name=getName();
+		if (name==null) return getID();
+		return name;
 	}
 }
