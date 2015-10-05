@@ -7,6 +7,7 @@ import java.net.URL;
 
 public class DefaultGW2APISource implements GW2APISource
 {
+	private final static String API_URL_V1="https://api.guildwars2.com/v1";
 	private final static String API_URL_V2="https://api.guildwars2.com/v2";
 
 	public DefaultGW2APISource()
@@ -32,6 +33,35 @@ public class DefaultGW2APISource implements GW2APISource
 		{
 			//TODO basic validation
 			return readUrl(API_URL_V2+"/"+resource);
+		}
+		catch (IOException e)
+		{
+			throw new GW2APIException(e);
+		}
+	}
+
+	@Override
+	public String readAPIv1Resource(String resource, String... parameters) throws GW2APIException
+	{
+		try
+		{
+			//TODO basic validation and escape
+			StringBuilder sb=new StringBuilder();
+			sb.append(API_URL_V1);
+			sb.append("/");
+			sb.append(resource);
+			sb.append(".json");
+			int len=parameters.length;
+			if (len%2!=0) throw new GW2APIException("Invalid number of API v1 parameters");
+			if (len>0) sb.append("?");
+			for (int i=0; i<len; i+=2)
+			{
+				if (i>0) sb.append("&");
+				sb.append(parameters[i]);
+				sb.append("=");
+				sb.append(parameters[i+1]);
+			}
+			return readUrl(sb.toString());
 		}
 		catch (IOException e)
 		{

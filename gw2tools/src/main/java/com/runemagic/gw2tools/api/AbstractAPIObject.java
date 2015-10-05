@@ -56,6 +56,11 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		return source.readAPIv2Resource(resource);
 	}
 
+	protected String readAPIv1Resource(String resource, String... parameters) throws GW2APIException
+	{
+		return source.readAPIv1Resource(resource, parameters);
+	}
+
 	protected void progress(float increment)
 	{
 		updateProgress.set(updateProgress.get()+increment);

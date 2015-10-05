@@ -7,4 +7,5 @@ public interface GW2APISource
 {
 	String readAPIv2Resource(String resource, APIKeyHolder keyHolder) throws GW2APIException;
 	String readAPIv2Resource(String resource) throws GW2APIException;
+	String readAPIv1Resource(String resource, String... parameters) throws GW2APIException;//TODO parameter object
 }
