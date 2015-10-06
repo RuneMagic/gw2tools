@@ -1,19 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="441.0" prefWidth="595.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.runemagic.gw2tools.gui.controller.AccountController">
-   <children>
-      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="14.0" prefHeight="272.0" prefWidth="202.0" text="Permissions" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="14.0">
+<SplitPane dividerPositions="0.5" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.runemagic.gw2tools.gui.controller.AccountController">
+   <items>
+      <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Account">
          <content>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
-               <center>
-                  <ListView fx:id="lstPermissions" prefHeight="174.0" prefWidth="176.0" BorderPane.alignment="CENTER" />
-               </center>
-            </BorderPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="441.0" prefWidth="329.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="14.0" prefHeight="17.0" prefWidth="44.0" text="ID:" AnchorPane.topAnchor="14.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="52.0" prefHeight="17.0" prefWidth="44.0" text="Name:" AnchorPane.topAnchor="46.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="88.0" prefHeight="17.0" prefWidth="44.0" text="World:" AnchorPane.topAnchor="78.0" />
+                  <TitledPane animated="false" collapsible="false" layoutX="78.6" layoutY="157.6" prefHeight="200.0" prefWidth="239.0" text="Guilds" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="138.0">
+                     <content>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                           <center>
+                              <ListView fx:id="lstAccountGuilds" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                     </content>
+                  </TitledPane>
+                  <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="120.0" text="Created:" AnchorPane.topAnchor="110.0" />
+                  <TextField fx:id="txtAccountID" editable="false" layoutX="67.0" layoutY="10.0" prefHeight="25.0" prefWidth="230.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                  <TextField fx:id="txtAccountName" editable="false" layoutX="71.0" layoutY="46.0" prefHeight="25.0" prefWidth="230.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="42.0" />
+                  <TextField fx:id="txtAccountWorld" editable="false" layoutX="61.0" layoutY="73.0" prefHeight="25.0" prefWidth="230.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="74.0" />
+                  <TextField fx:id="txtAccountCreated" editable="false" layoutX="61.0" layoutY="102.0" prefHeight="25.0" prefWidth="230.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="106.0" />
+               </children>
+            </AnchorPane>
          </content>
       </TitledPane>
-   </children>
-</AnchorPane>
+      <TitledPane animated="false" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="API Key">
+         <content>
+            <AnchorPane prefHeight="441.0" prefWidth="0.0">
+               <children>
+                  <TitledPane animated="false" collapsible="false" layoutX="70.0" layoutY="85.0" prefHeight="272.0" prefWidth="222.0" text="Permissions" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="74.0">
+                     <content>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0">
+                           <center>
+                              <ListView fx:id="lstTokenPermissions" prefHeight="174.0" prefWidth="176.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                     </content>
+                  </TitledPane>
+                  <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="24.0" prefHeight="17.0" prefWidth="44.0" text="ID:" AnchorPane.topAnchor="14.0" />
+                  <Label alignment="CENTER_RIGHT" layoutX="10.0" layoutY="56.0" prefHeight="17.0" prefWidth="44.0" text="Name:" AnchorPane.topAnchor="46.0" />
+                  <TextField fx:id="txtTokenID" editable="false" layoutX="60.0" layoutY="10.0" prefHeight="25.0" prefWidth="202.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                  <TextField fx:id="txtTokenName" editable="false" layoutX="115.0" layoutY="42.0" prefHeight="25.0" prefWidth="202.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="42.0" />
+               </children>
+            </AnchorPane>
+         </content>
+      </TitledPane>
+   </items>
+</SplitPane>

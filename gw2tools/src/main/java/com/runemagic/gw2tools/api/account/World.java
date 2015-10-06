@@ -20,7 +20,7 @@ public class World extends AbstractAPIObject
 	private static final String API_RESOURCE_WORLDS="worlds";
 
 	private IntegerProperty id=new SimpleIntegerProperty();
-	private StringProperty name=new SimpleStringProperty();
+	private StringProperty name=new SimpleStringProperty("");
 	private StringProperty population=new SimpleStringProperty();
 
 	private ObjectProperty<WorldRegion> region=new SimpleObjectProperty<>();
