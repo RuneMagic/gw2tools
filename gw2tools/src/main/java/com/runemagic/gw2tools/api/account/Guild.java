@@ -9,7 +9,6 @@ import javafx.beans.property.StringProperty;
 import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.AbstractAPIObject;
-import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class Guild extends AbstractAPIObject
@@ -28,9 +27,14 @@ public class Guild extends AbstractAPIObject
 	}
 
 	@Override
-	protected void updateImpl() throws GW2APIException
+	protected void initResources()
 	{
-		JSONObject json = new JSONObject(readAPIv1Resource(API_RESOURCE_GUILD, "guild_id", id.get()));
+		addAPIv1Resource(API_RESOURCE_GUILD, ()->new String[]{"guild_id", id.get()}, this::updateGuild);
+	}
+
+	private void updateGuild(String data)
+	{
+		JSONObject json = new JSONObject(data);
 		name.set(json.getString("guild_name"));
 		tag.set(json.getString("tag"));
 	}

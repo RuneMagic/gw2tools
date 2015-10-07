@@ -12,7 +12,6 @@ import javafx.beans.property.StringProperty;
 import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.AbstractAPIObject;
-import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class World extends AbstractAPIObject
@@ -36,9 +35,15 @@ public class World extends AbstractAPIObject
 		});
 	}
 
-	@Override protected void updateImpl() throws GW2APIException
+	@Override
+	protected void initResources()
 	{
-		JSONObject json = new JSONObject(readAPIv2Resource(API_RESOURCE_WORLDS+"/"+id.get()));
+		addAPIv2Resource(()->API_RESOURCE_WORLDS+"/"+id.get(), this::updateWorld);
+	}
+
+	private void updateWorld(String data)
+	{
+		JSONObject json = new JSONObject(data);
 		name.set(json.getString("name"));
 		population.set(json.getString("population"));//TODO consider using an enum
 	}

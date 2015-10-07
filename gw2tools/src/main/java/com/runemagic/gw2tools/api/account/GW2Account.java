@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 import com.runemagic.gw2tools.api.GW2API;
-import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
@@ -56,16 +55,16 @@ public class GW2Account extends AuthenticatedAPIObject
 		return null;
 	}
 
-	@Override protected void updateImpl() throws GW2APIException
+	@Override
+	protected void initResources()
 	{
-		updateAccount();
-		updateCharacters();
+		addAPIv2Resource(API_RESOURCE_ACCOUNT, this, this::updateAccount);
+		addAPIv2Resource(API_RESOURCE_CHARACTERS, this, this::updateCharacters);
 	}
 
-	private void updateAccount() throws GW2APIException
+	private void updateAccount(String data)
 	{
-		//load account data
-		JSONObject json = new JSONObject(readAPIv2Resource(API_RESOURCE_ACCOUNT, this));
+		JSONObject json = new JSONObject(data);
 		id.set(json.getString("id"));
 		name.set(json.getString("name"));
 		world.set(GW2API.inst().getWorld(json.getInt("world")));
@@ -79,11 +78,10 @@ public class GW2Account extends AuthenticatedAPIObject
 		created.set(Instant.parse(json.getString("created")));
 	}
 
-	private void updateCharacters() throws GW2APIException
+	private void updateCharacters(String data)
 	{
-		//load characters
 		List<String> charNames=new ArrayList<>();
-		JSONArray json = new JSONArray(readAPIv2Resource(API_RESOURCE_CHARACTERS, this));
+		JSONArray json = new JSONArray(data);
 		int len=json.length();
 		for (int i=0;i<len;i++)
 		{
@@ -106,16 +104,16 @@ public class GW2Account extends AuthenticatedAPIObject
 
 		for (String charName:charNames)
 		{
-			GW2Character character=new GW2Character(source, charName, getAPIKey());
+			GW2Character character = new GW2Character(source, charName, getAPIKey());
 			characters.add(character);//TODO keep original order
-			character.update();
+			character.update();//TODO update progress
 		}
-		float inc=1f/characters.size();
+		/*float inc=1f/characters.size();
 		for (GW2Character character:characters)
 		{
 			character.waitForUpdate();
 			progress(inc);
-		}
+		}*/
 	}
 
 	public String getId()

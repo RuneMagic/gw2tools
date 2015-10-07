@@ -1,7 +1,7 @@
 package com.runemagic.gw2tools.api;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.api.account.Guild;
@@ -13,8 +13,8 @@ public class GW2API
 {
 	private static final GW2API instance=new GW2API();
 
-	private final Map<String, Guild> guilds=new HashMap<>();
-	private final Map<Integer, World> worlds=new HashMap<>();
+	private final Map<String, Guild> guilds=new ConcurrentHashMap<>();
+	private final Map<Integer, World> worlds=new ConcurrentHashMap<>();
 
 	private final GW2APISource source;
 
@@ -30,29 +30,35 @@ public class GW2API
 
 	public World getWorld(int id)
 	{
-		World ret=worlds.get(id);
-		//TODO validate guild id
-		if (ret==null)
+		synchronized (worlds)
 		{
-			ret=new World(source, id);
-			worlds.put(id, ret);
-			ret.update();//TODO better update schedule
+			World ret = worlds.get(id);
+			//TODO validate guild id
+			if (ret == null)
+			{
+				ret = new World(source, id);
+				worlds.put(id, ret);
+				ret.update();//TODO better update schedule
+			}
+			return ret;
 		}
-		return ret;
 	}
 
 	public Guild getGuild(String id)
 	{
-		if (id==null) return null;
-		Guild ret=guilds.get(id);
-		//TODO validate guild id
-		if (ret==null)
+		synchronized (guilds)
 		{
-			ret=new Guild(source, id);
-			guilds.put(id, ret);
-			ret.update();//TODO better update schedule
+			if (id == null) return null;
+			Guild ret = guilds.get(id);
+			//TODO validate guild id
+			if (ret == null)
+			{
+				ret = new Guild(source, id);
+				guilds.put(id, ret);
+				ret.update();//TODO better update schedule
+			}
+			return ret;
 		}
-		return ret;
 	}
 
 	public TokenInfo getTokenInfo(String apiKey) throws GW2APIException

@@ -22,7 +22,6 @@ import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
-import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class TokenInfo extends AuthenticatedAPIObject
@@ -47,9 +46,15 @@ public class TokenInfo extends AuthenticatedAPIObject
 		});
 	}
 
-	@Override protected void updateImpl() throws GW2APIException
+	@Override
+	protected void initResources()
 	{
-		JSONObject json=new JSONObject(readAPIv2Resource(API_RESOURCE_TOKENINFO, this));
+		addAPIv2Resource(API_RESOURCE_TOKENINFO, this, this::updateTokenInfo);
+	}
+
+	private void updateTokenInfo(String data)
+	{
+		JSONObject json=new JSONObject(data);
 		id.set(json.getString("id"));
 		name.set(json.getString("name"));
 		JSONArray perms=json.getJSONArray("permissions");
@@ -59,7 +64,7 @@ public class TokenInfo extends AuthenticatedAPIObject
 		{
 			String permName=perms.getString(i);
 			GW2APIPermission perm=GW2APIPermission.byName(permName);
-			if (perm==null) throw new GW2APIException("Unknown permission: "+permName);
+			if (perm==null) continue; //TODO //throw new GW2APIException("Unknown permission: "+permName);
 			permissions.add(perm);
 		}
 	}

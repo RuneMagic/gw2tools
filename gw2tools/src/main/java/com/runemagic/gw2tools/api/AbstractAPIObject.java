@@ -1,8 +1,11 @@
 package com.runemagic.gw2tools.api;
 
-import java.util.concurrent.ExecutionException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -16,49 +19,80 @@ import com.runemagic.gw2tools.GW2Tools;
 
 public abstract class AbstractAPIObject implements GW2APIObject
 {
-	private static final String API_THREAD_POOL="GW2APIUpdate";
+	private static final String API_RESOURCE_THREAD_POOL="GW2APIResource";
 
 	private FloatProperty updateProgress=new SimpleFloatProperty();
 	private BooleanProperty updating=new SimpleBooleanProperty();
 	private BooleanProperty valid=new SimpleBooleanProperty();
 	protected final GW2APISource source;
 	//private Map<String, Property> fields=new HashMap<>();
-	private Future<?> task;
+	private List<ResourceProcessor> resources=new ArrayList<>();
+	private boolean initialized;
+
+	private final Object updateLock=new Object();
 
 	public AbstractAPIObject(GW2APISource source)
 	{
 		this.source=source;
-	}
+		initialized=false;
+		initResources();
+		resources=Collections.unmodifiableList(resources);
+		initialized=true;
 
-	protected abstract void updateImpl() throws GW2APIException;
+		updating.addListener((obs,ov,nv)->{
+			synchronized(updateLock)
+			{
+				if (!nv) updateLock.notify();
+			}
+		});
+	}
 
 	protected void onUpdateFinished(){}
+	protected void onUpdateFailed(){}
 
-	/*public ReadOnlyProperty<?> property(String name)
+	protected abstract void initResources();
+
+	private void initCheck()
 	{
-		return fields.get(name);
+		if (initialized) throw new IllegalStateException("Can't add resource processors after the object is initialized");
 	}
 
-	public final Object get(String name)
+	protected void addAPIv2Resource(String resourcePath, Consumer<String> resourceConsumer)
 	{
-		ReadOnlyProperty<?> field=property(name);
-		if (field==null) return null; //TODO exception/log
-		return field.getValue();
-	}*/
-
-	protected String readAPIv2Resource(String resource, APIKeyHolder keyHolder) throws GW2APIException
-	{
-		return source.readAPIv2Resource(resource, keyHolder);
+		addAPIv2Resource(()->resourcePath, resourceConsumer);
 	}
 
-	protected String readAPIv2Resource(String resource) throws GW2APIException
+	protected void addAPIv2Resource(String resourcePath, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
 	{
-		return source.readAPIv2Resource(resource);
+		addAPIv2Resource(()->resourcePath, keyHolder, resourceConsumer);
 	}
 
-	protected String readAPIv1Resource(String resource, String... parameters) throws GW2APIException
+	protected void addAPIv1Resource(String resourcePath, String[] parameters, Consumer<String> resourceConsumer)
 	{
-		return source.readAPIv1Resource(resource, parameters);
+		addAPIv1Resource(() -> resourcePath, () -> parameters, resourceConsumer);
+	}
+
+	protected void addAPIv1Resource(String resourcePath, Supplier<String[]> parametersSupplier, Consumer<String> resourceConsumer)
+	{
+		addAPIv1Resource(() -> resourcePath, parametersSupplier, resourceConsumer);
+	}
+
+	protected void addAPIv2Resource(Supplier<String> resourcePathSupplier, Consumer<String> resourceConsumer)
+	{
+		initCheck();
+		resources.add(new ResourceProcessor(true, resourcePathSupplier, null, null, resourceConsumer));
+	}
+
+	protected void addAPIv2Resource(Supplier<String> resourcePathSupplier, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
+	{
+		initCheck();
+		resources.add(new ResourceProcessor(true, resourcePathSupplier, null, keyHolder, resourceConsumer));
+	}
+
+	protected void addAPIv1Resource(Supplier<String> resourcePathSupplier, Supplier<String[]> parametersSupplier, Consumer<String> resourceConsumer)
+	{
+		initCheck();
+		resources.add(new ResourceProcessor(false, resourcePathSupplier, parametersSupplier, null, resourceConsumer));
 	}
 
 	protected void progress(float increment)
@@ -73,26 +107,58 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		if (updating.get()) return;
 		updating.set(true);
 		updateProgress.set(0f);
-		ExecutorService exec=GW2Tools.inst().getThreadManager().getExecutor(API_THREAD_POOL);//TODO consider using javafx concurrency
-		task=exec.submit(() -> {
+		ExecutorService exec=GW2Tools.inst().getThreadManager().getExecutor(API_RESOURCE_THREAD_POOL); //TODO consider using javafx concurrency
+		exec.submit(() -> {
+			List<String> results=new ArrayList<>();
 			try
 			{
-				updateImpl();
-				Platform.runLater(() -> valid.set(true));
-			}
-			catch (GW2APIException e)
-			{
-				e.printStackTrace();//TODO proper exception handling
-				Platform.runLater(() -> valid.set(false));
-			}
-			finally
-			{
+				for (ResourceProcessor res : resources)
+				{
+					results.add(res.fetchData());
+				}
 				Platform.runLater(() -> {
-					updating.set(false);
-					updateProgress.set(1f);
-					onUpdateFinished();
+					try
+					{
+						int len=resources.size();
+						for (int i=0; i<len; i++)
+						{
+							ResourceProcessor res=resources.get(i);
+							String data=results.get(i);
+							res.process(data);
+						}
+						onUpdateFinished();
+						valid.set(true);
+					}
+					catch (Throwable t)
+					{
+						t.printStackTrace();//TODO proper exception handling
+						valid.set(false);
+					}
+					finally
+					{
+						updateProgress.set(1f);
+						updating.set(false);
+					}
 				});
 			}
+			catch (Throwable t)
+			{
+				t.printStackTrace();//TODO proper exception handling
+				Platform.runLater(() -> {
+					try
+					{
+						onUpdateFailed();
+					}
+					finally
+					{
+						updateProgress.set(1f);
+						valid.set(false);
+						updating.set(false);
+					}
+				});
+				return;
+			}
+
 		});
 	}
 
@@ -128,20 +194,38 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		return updating;
 	}
 
-	public void waitForUpdate()
+	private final class ResourceProcessor
 	{
-		if (task==null || task.isDone()) return;
-		try
+		private final Supplier<String> resource;
+		private final Supplier<String[]> parameters;
+		private final APIKeyHolder keyHolder;
+		private final Consumer<String> resourceConsumer;
+		private final boolean v2;
+
+		public ResourceProcessor(boolean v2, Supplier<String> resource, Supplier<String[]> parameters, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
 		{
-			task.get();
+			this.resource = resource;
+			this.parameters = parameters;
+			this.keyHolder = keyHolder;
+			this.resourceConsumer = resourceConsumer;
+			this.v2 = v2;
 		}
-		catch (InterruptedException e)
+
+		public String fetchData() throws GW2APIException
 		{
-			e.printStackTrace();//TODO handle these properly
+			String res=resource.get();
+			if (res==null || res.isEmpty()) throw new GW2APIException("Null or empty resource path");
+			if (v2)
+			{
+				if (keyHolder==null) return source.readAPIv2Resource(res);
+				else return source.readAPIv2Resource(res, keyHolder);
+			}
+			else return source.readAPIv1Resource(res, parameters.get());
 		}
-		catch (ExecutionException e)
+
+		public void process(String result)
 		{
-			e.printStackTrace();
+			resourceConsumer.accept(result);
 		}
 	}
 }

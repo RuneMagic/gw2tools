@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 import com.runemagic.gw2tools.api.GW2API;
-import com.runemagic.gw2tools.api.GW2APIException;
 import com.runemagic.gw2tools.api.GW2APISource;
 import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.util.StringTools;
@@ -59,15 +58,20 @@ public class GW2Character extends AuthenticatedAPIObject
 		formattedAge.bind(Bindings.createStringBinding(()-> StringTools.formatSecondsLong(age.get()), age));
 	}
 
+	@Override
+	protected void initResources()
+	{
+		addAPIv2Resource(()->API_RESOURCE_CHARACTERS + "/" + getURLEncodedName(), this, this::updateCharacter);
+	}
+
 	private String getURLEncodedName()
 	{
 		return name.get().replaceAll(" ", "%20");//TODO proper encoding
 	}
 
-	@Override
-	protected void updateImpl() throws GW2APIException
+	private void updateCharacter(String data)
 	{
-		JSONObject json=new JSONObject(readAPIv2Resource(API_RESOURCE_CHARACTERS + "/" + getURLEncodedName(), this));
+		JSONObject json=new JSONObject(data);
 		name.set(json.getString("name"));
 		race.set(CharacterRace.byName(json.getString("race")));
 		gender.set(CharacterGender.byName(json.getString("gender")));
