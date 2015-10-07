@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 
+import com.runemagic.gw2tools.api.GW2APISource;
 import com.runemagic.gw2tools.api.items.GW2Item;
 
 public class EquipmentItem extends GW2Item
@@ -17,8 +18,9 @@ public class EquipmentItem extends GW2Item
 	private ListProperty<Integer> infusions=new SimpleListProperty<>(FXCollections.observableArrayList());//TODO infusions
 	private IntegerProperty skin=new SimpleIntegerProperty();
 
-	public EquipmentItem(int id)
+	public EquipmentItem(GW2APISource source, int id)
 	{
-		super(id);
+		super(source, id);
 	}
+
 }
