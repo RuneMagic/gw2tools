@@ -248,6 +248,7 @@ public class GW2Tools extends Application
 	{
 		app.addView("Account", loadFXML("account.fxml"), Icons.createIconLabel(FontIcon.USER, 30), true);
 		app.addView("Characters", loadFXML("characters.fxml"), Icons.createIconLabel(FontIcon.CHILD, 30), false);
+		app.addView("Commerce", loadFXML("commerce.fxml"), Icons.createIconLabel(FontIcon.CREDIT_CARD, 30), false);
 		app.addView("About", loadFXML("about.fxml"), Icons.createIconLabel(FontIcon.INFO_CIRCLE, 30), false);
 	}
 
