@@ -9,17 +9,21 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import org.json.JSONObject;
-
 import com.runemagic.gw2tools.api.AbstractAPIObject;
+import com.runemagic.gw2tools.api.GW2APIField;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class World extends AbstractAPIObject
 {
 	private static final String API_RESOURCE_WORLDS="worlds";
 
+	//@GW2APIField(name="id")
 	private IntegerProperty id=new SimpleIntegerProperty();
+
+	@GW2APIField(name="name")
 	private StringProperty name=new SimpleStringProperty("");
+
+	@GW2APIField(name="population")
 	private StringProperty population=new SimpleStringProperty();
 
 	private ObjectProperty<WorldRegion> region=new SimpleObjectProperty<>();
@@ -38,15 +42,15 @@ public class World extends AbstractAPIObject
 	@Override
 	protected void initResources()
 	{
-		addAPIv2Resource(()->API_RESOURCE_WORLDS+"/"+id.get(), this::updateWorld);
+		addAPIv2Resource(()->API_RESOURCE_WORLDS+"/"+id.get(), null/*this::updateWorld*/);
 	}
 
-	private void updateWorld(String data)
+	/*private void updateWorld(String data)
 	{
 		JSONObject json = new JSONObject(data);
 		name.set(json.getString("name"));
 		population.set(json.getString("population"));//TODO consider using an enum
-	}
+	}*/
 
 	public int getId()
 	{

@@ -21,7 +21,8 @@ import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
-import com.runemagic.gw2tools.api.GW2API;
+import com.runemagic.gw2tools.api.GW2APIField;
+import com.runemagic.gw2tools.api.GW2APIFieldType;
 import com.runemagic.gw2tools.api.GW2APISource;
 import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.util.StringTools;
@@ -30,15 +31,32 @@ public class GW2Character extends AuthenticatedAPIObject
 {
 	private final static String API_RESOURCE_CHARACTERS="characters";
 
+	@GW2APIField(name = "name")
 	private StringProperty name=new SimpleStringProperty();
+
+	@GW2APIField(name = "race", sourceType = GW2APIFieldType.STRING, targetType = CharacterRace.class, factory = "byName")
 	private ObjectProperty<CharacterRace> race=new SimpleObjectProperty<>();
+
+	@GW2APIField(name = "gender", sourceType = GW2APIFieldType.STRING, targetType = CharacterGender.class, factory = "byName")
 	private ObjectProperty<CharacterGender> gender=new SimpleObjectProperty<>();
+
+	@GW2APIField(name = "profession", sourceType = GW2APIFieldType.STRING, targetType = CharacterProfession.class, factory = "byName")
 	private ObjectProperty<CharacterProfession> profession=new SimpleObjectProperty<>();
+
+	@GW2APIField(name = "level")
 	private IntegerProperty level=new SimpleIntegerProperty();
+
+	@GW2APIField(name = "guild", optional=true, sourceType = GW2APIFieldType.STRING, factory = "getGuild")
 	private ObjectProperty<Guild> guild=new SimpleObjectProperty<>();
+
+	@GW2APIField(name = "created", sourceType = GW2APIFieldType.DATETIME)
 	private ObjectProperty<Instant> created=new SimpleObjectProperty<>();
+
+	@GW2APIField(name = "age")
 	private LongProperty age=new SimpleLongProperty();
 	private StringProperty formattedAge=new SimpleStringProperty();
+
+	@GW2APIField(name = "deaths")
 	private IntegerProperty deaths=new SimpleIntegerProperty();
 	//TODO crafting
 	private ObjectProperty<CharacterBuild> buildPVE=new SimpleObjectProperty<>();
@@ -72,7 +90,7 @@ public class GW2Character extends AuthenticatedAPIObject
 	private void updateCharacter(String data)
 	{
 		JSONObject json=new JSONObject(data);
-		name.set(json.getString("name"));
+		/*name.set(json.getString("name"));
 		race.set(CharacterRace.byName(json.getString("race")));
 		gender.set(CharacterGender.byName(json.getString("gender")));
 		profession.set(CharacterProfession.byName(json.getString("profession")));
@@ -80,7 +98,7 @@ public class GW2Character extends AuthenticatedAPIObject
 		guild.set(GW2API.inst().getGuild(json.optString("guild", null)));
 		created.set(Instant.parse(json.getString("created")));
 		age.set(json.getLong("age"));
-		deaths.set(json.getInt("deaths"));
+		deaths.set(json.getInt("deaths"));*/
 		//TODO crafting
 		JSONObject specs=json.optJSONObject("specializations");
 		if (specs!=null)

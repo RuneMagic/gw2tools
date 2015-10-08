@@ -46,6 +46,7 @@ public class GW2API
 
 	public Guild getGuild(String id)
 	{
+		if (id==null || id.isEmpty()) return null;
 		synchronized (guilds)
 		{
 			if (id == null) return null;

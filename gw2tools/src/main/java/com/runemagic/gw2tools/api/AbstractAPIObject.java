@@ -1,5 +1,9 @@
 package com.runemagic.gw2tools.api;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,12 +14,22 @@ import java.util.function.Supplier;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyFloatProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.StringProperty;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.runemagic.gw2tools.GW2Tools;
+import com.sun.istack.internal.NotNull;
 
 public abstract class AbstractAPIObject implements GW2APIObject
 {
@@ -27,24 +41,42 @@ public abstract class AbstractAPIObject implements GW2APIObject
 	protected final GW2APISource source;
 	//private Map<String, Property> fields=new HashMap<>();
 	private List<ResourceProcessor> resources=new ArrayList<>();
+	private List<FieldProcessor> fieldProcessors=new ArrayList<>();
 	private boolean initialized;
-
-	private final Object updateLock=new Object();
+	private boolean fieldsMapped;
 
 	public AbstractAPIObject(GW2APISource source)
 	{
 		this.source=source;
+		fieldsMapped=false;
 		initialized=false;
 		initResources();
 		resources=Collections.unmodifiableList(resources);
 		initialized=true;
+	}
 
-		updating.addListener((obs,ov,nv)->{
-			synchronized(updateLock)
+	private void parseFieldAnnotations()
+	{
+		fieldsMapped=true; //TODO more sophisticated way to avoid repeated failures
+		for (Field field:this.getClass().getDeclaredFields())//TODO make this work with superclasses too
+		{
+			GW2APIField apiField=field.getAnnotation(GW2APIField.class);
+			if (apiField==null) continue;
+			try
 			{
-				if (!nv) updateLock.notify();
+				field.setAccessible(true);
+				Property prop=(Property)field.get(this);
+				fieldProcessors.add(new FieldProcessor(apiField, prop));
 			}
-		});
+			catch (IllegalAccessException e)
+			{
+				e.printStackTrace();
+			}
+			catch (GW2APIException e)
+			{
+				e.printStackTrace();//TODO proper exception handling
+			}
+		}
 	}
 
 	protected void onUpdateFinished(){}
@@ -52,7 +84,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 	protected abstract void initResources();
 
-	private void initCheck()
+	private void noInitCheck()
 	{
 		if (initialized) throw new IllegalStateException("Can't add resource processors after the object is initialized");
 	}
@@ -64,7 +96,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 	protected void addAPIv2Resource(String resourcePath, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
 	{
-		addAPIv2Resource(()->resourcePath, keyHolder, resourceConsumer);
+		addAPIv2Resource(() -> resourcePath, keyHolder, resourceConsumer);
 	}
 
 	protected void addAPIv1Resource(String resourcePath, String[] parameters, Consumer<String> resourceConsumer)
@@ -79,31 +111,31 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 	protected void addAPIv2Resource(Supplier<String> resourcePathSupplier, Consumer<String> resourceConsumer)
 	{
-		initCheck();
-		resources.add(new ResourceProcessor(true, resourcePathSupplier, null, null, resourceConsumer));
+		noInitCheck();
+		resources.add(new ResourceProcessor(null, true, resourcePathSupplier, null, null, resourceConsumer));
 	}
 
 	protected void addAPIv2Resource(Supplier<String> resourcePathSupplier, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
 	{
-		initCheck();
-		resources.add(new ResourceProcessor(true, resourcePathSupplier, null, keyHolder, resourceConsumer));
+		noInitCheck();
+		resources.add(new ResourceProcessor(null, true, resourcePathSupplier, null, keyHolder, resourceConsumer));
 	}
 
 	protected void addAPIv1Resource(Supplier<String> resourcePathSupplier, Supplier<String[]> parametersSupplier, Consumer<String> resourceConsumer)
 	{
-		initCheck();
-		resources.add(new ResourceProcessor(false, resourcePathSupplier, parametersSupplier, null, resourceConsumer));
+		noInitCheck();
+		resources.add(new ResourceProcessor(null, false, resourcePathSupplier, parametersSupplier, null, resourceConsumer));
 	}
 
 	protected void progress(float increment)
 	{
-		updateProgress.set(updateProgress.get()+increment);
+		updateProgress.set(updateProgress.get() + increment);
 	}
 
 	@Override
 	public void update()
 	{
-		//if (source==null) throw new IllegalStateException("API Data Source is null");
+		if (!fieldsMapped) parseFieldAnnotations();
 		if (updating.get()) return;
 		updating.set(true);
 		updateProgress.set(0f);
@@ -194,16 +226,210 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		return updating;
 	}
 
+
+	private static final class FieldProcessor
+	{
+		private final GW2APIField field;
+		private final Property property;
+		private Method factory;
+		private boolean opt;
+
+		public FieldProcessor(@NotNull GW2APIField field, @NotNull Property property) throws GW2APIException
+		{
+			this.field = field;
+			this.property = property;
+			this.opt=field.optional();
+			Class<?> targetClass;
+			if (!field.targetType().equals(Object.class)) targetClass = field.targetType();
+			else targetClass=GW2API.class;
+			if (!field.factory().isEmpty())
+			{
+				Class<?> sourceClass=getSourceType().getJavaClass();
+				try
+				{
+					factory=targetClass.getMethod(field.factory(), sourceClass);
+				}
+				catch (NoSuchMethodException e)
+				{
+					throw new GW2APIException(e);
+				}
+			}
+			else factory=null;
+		}
+
+		@SuppressWarnings("unchecked")
+		public void process(JSONObject json)
+		{
+			GW2APIFieldType type=getSourceType();
+			String name=field.name();
+			switch(type)
+			{
+			case STRING:
+				processValue(getString(json));
+				break;
+			case NUMBER:
+				processValue(getNumber(json));
+				break;
+			case DATETIME:
+				property.setValue(getDateTime(json));
+				break;
+			case ARRAY:
+				processArray(getArray(json));
+				break;
+			case OBJECT:
+				processObject(getObject(json));
+				break;
+			case DEFAULT:
+			default: throw new IllegalArgumentException("Unknown field source type: "+type);
+			}
+		}
+
+
+		private void processValue(Object val)
+		{
+			if (factory!=null)
+			{
+				try
+				{
+					if (!field.targetType().equals(Object.class)) val = factory.invoke(null, val);
+					else val = factory.invoke(GW2API.inst(), val);
+
+					property.setValue(val);
+				}
+				catch (IllegalAccessException | InvocationTargetException e)//TODO exception handling
+				{
+					e.printStackTrace();
+				}
+			}
+			else property.setValue(val);
+		}
+
+		private String getString(JSONObject json)
+		{
+			String name=field.name();
+			return opt ? json.optString(name) : json.getString(name);
+		}
+
+		private long getNumber(JSONObject json)
+		{
+			String name=field.name();
+			return opt ? json.optLong(name) : json.getLong(name);
+		}
+
+		private Instant getDateTime(JSONObject json)
+		{
+			String name=field.name();
+			String val=opt ? json.optString(name) : json.getString(name);
+			if (val==null || val.isEmpty()) return null;
+			return Instant.parse(val);
+		}
+
+		private JSONArray getArray(JSONObject json)
+		{
+			String name=field.name();
+			return opt ? json.optJSONArray(name) : json.getJSONArray(name);
+		}
+
+		private JSONObject getObject(JSONObject json)
+		{
+			String name=field.name();
+			return opt ? json.optJSONObject(name) : json.getJSONObject(name);
+		}
+
+		private Object getValue(JSONObject json)
+		{
+			GW2APIFieldType type=getSourceType();
+			switch(type)
+			{
+			case STRING: return getString(json);
+			case NUMBER: return getNumber(json);
+			case DATETIME: return getDateTime(json);
+			case ARRAY: return getArray(json);
+			case OBJECT: throw new UnsupportedOperationException("Object source type is not supported.");//TODO object source type
+			// return getObject(json);
+			case DEFAULT:
+			default: throw new IllegalArgumentException("Unknown field source type: "+type);
+			}
+		}
+
+		private void processObject(JSONObject json)
+		{
+			if (json==null) return;
+			throw new UnsupportedOperationException("Object source type is not supported.");//TODO object source type
+			/*try
+			{
+				Object val;
+				if (!field.targetType().equals(Object.class)) val=factory.invoke(null, getValue(json));
+				else val=factory.invoke(GW2API.inst(), getValue(json));
+
+				property.setValue(val);
+			}
+			catch (IllegalAccessException | InvocationTargetException e)//TODO exception handling
+			{
+				e.printStackTrace();
+			}*/
+		}
+
+		private void processArray(JSONArray json)
+		{
+			if (json==null) return;
+			GW2APIFieldType itemType=field.itemType();
+			switch(itemType)
+			{
+			case DEFAULT: throw new IllegalArgumentException("Arrays can't have items of the 'default' type");
+			case STRING:
+				processStringArray(json);
+				break;
+			case NUMBER:
+				processNumberArray(json);
+				break;
+			case DATETIME: throw new UnsupportedOperationException("Arrays of times are not supported.");
+			case ARRAY: throw new UnsupportedOperationException("Arrays of arrays are not supported.");
+			case OBJECT: throw new UnsupportedOperationException("Arrays of objects are not supported.");
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		private void processNumberArray(JSONArray json)
+		{
+			ListProperty list=(ListProperty)property;
+			for (int i=0; i<json.length(); i++) list.add(json.getLong(i));
+		}
+
+		@SuppressWarnings("unchecked")
+		private void processStringArray(JSONArray json)
+		{
+			ListProperty list=(ListProperty)property;
+			for (int i=0; i<json.length(); i++) list.add(json.getString(i));
+		}
+
+		private GW2APIFieldType getSourceType()
+		{
+			GW2APIFieldType ret=field.sourceType();
+			if (ret==GW2APIFieldType.DEFAULT)
+			{
+				if (property instanceof StringProperty) return GW2APIFieldType.STRING;
+				if (property instanceof IntegerProperty || property instanceof LongProperty) return GW2APIFieldType.NUMBER;
+				if (property instanceof ListProperty) return GW2APIFieldType.ARRAY;
+				throw new IllegalArgumentException("Unknown property class: "+property.getClass());
+			}
+			else return ret;
+		}
+	}
+
 	private final class ResourceProcessor
 	{
+		private final String name;
 		private final Supplier<String> resource;
 		private final Supplier<String[]> parameters;
 		private final APIKeyHolder keyHolder;
 		private final Consumer<String> resourceConsumer;
 		private final boolean v2;
 
-		public ResourceProcessor(boolean v2, Supplier<String> resource, Supplier<String[]> parameters, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
+
+		public ResourceProcessor(String name, boolean v2, Supplier<String> resource, Supplier<String[]> parameters, APIKeyHolder keyHolder, Consumer<String> resourceConsumer)
 		{
+			this.name = name;
 			this.resource = resource;
 			this.parameters = parameters;
 			this.keyHolder = keyHolder;
@@ -225,7 +451,23 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 		public void process(String result)
 		{
-			resourceConsumer.accept(result);
+			try
+			{
+				JSONObject json=new JSONObject(result);
+				for (FieldProcessor proc:fieldProcessors)
+				{
+					proc.process(json);
+				}
+			}
+			catch (JSONException e)
+			{
+				//e.printStackTrace();
+				//TODO proper JSON object/array validation
+			}
+			finally
+			{
+				if (resourceConsumer!=null) resourceConsumer.accept(result);
+			}
 		}
 	}
 }

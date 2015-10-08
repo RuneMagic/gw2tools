@@ -6,17 +6,21 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import org.json.JSONObject;
-
 import com.runemagic.gw2tools.api.AbstractAPIObject;
+import com.runemagic.gw2tools.api.GW2APIField;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class Guild extends AbstractAPIObject
 {
 	private final static String API_RESOURCE_GUILD="guild_details";
 
+	//@GW2APIField(name="id")
 	private StringProperty id=new SimpleStringProperty();
+
+	@GW2APIField(name="guild_name")
 	private StringProperty name=new SimpleStringProperty();
+
+	@GW2APIField(name="tag")
 	private StringProperty tag=new SimpleStringProperty();
 	//TODO emblem
 
@@ -29,15 +33,15 @@ public class Guild extends AbstractAPIObject
 	@Override
 	protected void initResources()
 	{
-		addAPIv1Resource(API_RESOURCE_GUILD, ()->new String[]{"guild_id", id.get()}, this::updateGuild);
+		addAPIv1Resource(API_RESOURCE_GUILD, () -> new String[]{"guild_id", id.get()}, null/*this::updateGuild*/);
 	}
 
-	private void updateGuild(String data)
+	/*private void updateGuild(String data)
 	{
 		JSONObject json = new JSONObject(data);
 		name.set(json.getString("guild_name"));
 		tag.set(json.getString("tag"));
-	}
+	}*/
 
 	public String getID()
 	{
