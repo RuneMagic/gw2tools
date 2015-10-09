@@ -29,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.runemagic.gw2tools.GW2Tools;
-import com.sun.istack.internal.NotNull;
 
 public abstract class AbstractAPIObject implements GW2APIObject
 {
@@ -234,7 +233,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		private Method factory;
 		private boolean opt;
 
-		public FieldProcessor(@NotNull GW2APIField field, @NotNull Property property) throws GW2APIException
+		public FieldProcessor(GW2APIField field, Property property) throws GW2APIException
 		{
 			this.field = field;
 			this.property = property;
