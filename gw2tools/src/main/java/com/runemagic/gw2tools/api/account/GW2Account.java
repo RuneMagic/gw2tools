@@ -16,11 +16,11 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
-import com.runemagic.gw2tools.api.GW2API;
+import com.runemagic.gw2tools.api.GW2APIField;
+import com.runemagic.gw2tools.api.GW2APIFieldType;
 import com.runemagic.gw2tools.api.GW2APISource;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
@@ -30,10 +30,20 @@ public class GW2Account extends AuthenticatedAPIObject
 	private final static String API_RESOURCE_ACCOUNT="account";
 
 	private ListProperty<GW2Character> characters=new SimpleListProperty<>(FXCollections.observableArrayList());//TODO unmodifiable list
+
+	@GW2APIField(name = "id")
 	private StringProperty id=new SimpleStringProperty();
+
+	@GW2APIField(name = "name")
 	private StringProperty name=new SimpleStringProperty();
+
+	@GW2APIField(name = "world", sourceType = GW2APIFieldType.NUMBER, factory = "getWorld")
 	private ObjectProperty<World> world=new SimpleObjectProperty<>();
+
+	@GW2APIField(name = "guilds", sourceType = GW2APIFieldType.ARRAY, itemType = GW2APIFieldType.STRING, factory = "getGuild")
 	private ListProperty<Guild> guilds=new SimpleListProperty<>(FXCollections.observableArrayList());//TODO unmodifiable list
+
+	@GW2APIField(name = "created", sourceType = GW2APIFieldType.DATETIME)
 	private ObjectProperty<Instant> created=new SimpleObjectProperty<>();
 
 	public GW2Account(GW2APISource source, APIKey apiKey)
@@ -58,24 +68,8 @@ public class GW2Account extends AuthenticatedAPIObject
 	@Override
 	protected void initResources()
 	{
-		addAPIv2Resource(API_RESOURCE_ACCOUNT, this, this::updateAccount);
+		addAPIv2Resource(API_RESOURCE_ACCOUNT, this, null);
 		addAPIv2Resource(API_RESOURCE_CHARACTERS, this, this::updateCharacters);
-	}
-
-	private void updateAccount(String data)
-	{
-		JSONObject json = new JSONObject(data);
-		id.set(json.getString("id"));
-		name.set(json.getString("name"));
-		world.set(GW2API.inst().getWorld(json.getInt("world")));
-		JSONArray guildsArray=json.getJSONArray("guilds");
-		int len=guildsArray.length();
-		guilds.clear();//TODO proper update, not just reload
-		for (int i=0;i<len;i++)
-		{
-			guilds.add(GW2API.inst().getGuild(guildsArray.getString(i)));
-		}
-		created.set(Instant.parse(json.getString("created")));
 	}
 
 	private void updateCharacters(String data)
