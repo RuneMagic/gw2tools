@@ -7,6 +7,48 @@ public final class StringTools
 {
  	private StringTools(){}
 
+	public static String formatMoney(int coins)
+	{
+		return formatMoney(coins, false);
+	}
+
+	public static String formatMoney(int coins, boolean showAll)
+	{
+		boolean neg=false;
+		if (coins<0)
+		{
+			neg=true;
+			coins=Math.abs(coins);
+		}
+		int c=coins%100;
+		coins/=100;
+		int s=coins%100;
+		coins/=100;
+		int g=coins;
+		StringBuilder sb=new StringBuilder();
+		boolean force=showAll;
+		if (neg) sb.append("-");
+		if (g>0 || force)
+		{
+			sb.append(g);
+			sb.append("g ");
+			force=true;
+		}
+		if (s>0 || force)
+		{
+			sb.append(s);
+			sb.append("s ");
+			force=true;
+		}
+		if (c>0 || force)
+		{
+			sb.append(c);
+			sb.append("c");
+		}
+		String ret=sb.toString().trim();
+		if (ret.isEmpty()) return "0c";
+		else return ret;
+	}
 
 	public static String formatSecondsLong(long time)
 	{

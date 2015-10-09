@@ -8,6 +8,7 @@ import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.api.account.TokenInfo;
 import com.runemagic.gw2tools.api.account.World;
 import com.runemagic.gw2tools.api.character.GW2Character;
+import com.runemagic.gw2tools.api.items.GW2Item;
 
 public class GW2API
 {
@@ -15,6 +16,7 @@ public class GW2API
 
 	private final Map<String, Guild> guilds=new ConcurrentHashMap<>();
 	private final Map<Integer, World> worlds=new ConcurrentHashMap<>();
+	private final Map<Integer, GW2Item> items=new ConcurrentHashMap<>();
 
 	private final GW2APISource source;
 
@@ -26,6 +28,23 @@ public class GW2API
 	public static GW2API inst()
 	{
 		return instance;
+	}
+
+	public GW2Item getItem(Integer id)
+	{
+		if (id==null) return null;
+		synchronized (items)
+		{
+			GW2Item ret = items.get(id);
+			//TODO validate item id
+			if (ret == null)
+			{
+				ret = new GW2Item(source, id);
+				items.put(id, ret);
+				ret.update();//TODO better update schedule
+			}
+			return ret;
+		}
 	}
 
 	public World getWorld(Integer id)
@@ -50,7 +69,6 @@ public class GW2API
 		if (id==null || id.isEmpty()) return null;
 		synchronized (guilds)
 		{
-			if (id == null) return null;
 			Guild ret = guilds.get(id);
 			//TODO validate guild id
 			if (ret == null)

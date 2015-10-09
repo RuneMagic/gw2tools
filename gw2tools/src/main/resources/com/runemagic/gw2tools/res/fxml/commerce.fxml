@@ -26,18 +26,18 @@
                     </rowConstraints>
                      <children>
                         <ComboBox fx:id="cbSelectMaterial" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="134.0" promptText="Select material" />
-                        <Label text="Raw material price:" GridPane.rowIndex="1" />
-                        <Label text="Processed material price:" GridPane.rowIndex="2" />
+                        <Label fx:id="lblRaw" text="Raw material price:" GridPane.rowIndex="1" />
+                        <Label fx:id="lblProcessed" text="Processed material price:" GridPane.rowIndex="2" />
                         <Label text="Processing value:" GridPane.rowIndex="3" />
                         <TextField fx:id="txtRawPrice" editable="false" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <TextField fx:id="txtProcessedPrice" editable="false" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <TextField fx:id="txtProcessingValue" editable="false" prefHeight="25.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <CheckBox fx:id="chkRawBuy" mnemonicParsing="false" text="Use highest buy price" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                         <CheckBox fx:id="chkProcessedBuy" mnemonicParsing="false" text="Use highest buy price" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                        <ComboBox fx:id="cbOperation" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" />
+                        <ComboBox fx:id="cbAction" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" />
                         <Label text="Result:" GridPane.rowIndex="4" />
                         <TextField fx:id="txtResult" editable="false" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                        <Button mnemonicParsing="false" onAction="#calculateResult" prefHeight="25.0" prefWidth="90.0" text="Calculate" GridPane.columnIndex="2" />
+                        <Button mnemonicParsing="false" onAction="#updateItemData" prefHeight="25.0" prefWidth="90.0" text="Calculate" GridPane.columnIndex="2" />
                      </children>
                   </GridPane>
                </children></AnchorPane>
