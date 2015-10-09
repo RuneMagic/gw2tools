@@ -227,7 +227,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 	}
 
 
-	private static final class FieldProcessor
+	private static final class FieldProcessor //TODO this is a mess
 	{
 		private final GW2APIField field;
 		private final Property property;
@@ -244,10 +244,11 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			else targetClass=GW2API.class;
 			if (!field.factory().isEmpty())
 			{
-				Class<?> sourceClass=getSourceType().getJavaClass();
+				GW2APIFieldType type=getSourceType();
+				if (type==GW2APIFieldType.ARRAY) type=field.itemType();
 				try
 				{
-					factory=targetClass.getMethod(field.factory(), sourceClass);
+					factory=targetClass.getMethod(field.factory(), type.getJavaClass());
 				}
 				catch (NoSuchMethodException e)
 				{
@@ -265,13 +266,13 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			switch(type)
 			{
 			case STRING:
-				processValue(getString(json));
+				property.setValue(getValue(json));
 				break;
 			case NUMBER:
-				processValue(getNumber(json));
+				property.setValue(getValue(json));
 				break;
 			case DATETIME:
-				property.setValue(getDateTime(json));
+				property.setValue(getValue(json));
 				break;
 			case ARRAY:
 				processArray(getArray(json));
@@ -284,36 +285,16 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			}
 		}
 
-
-		private void processValue(Object val)
-		{
-			if (factory!=null)
-			{
-				try
-				{
-					if (!field.targetType().equals(Object.class)) val = factory.invoke(null, val);
-					else val = factory.invoke(GW2API.inst(), val);
-
-					property.setValue(val);
-				}
-				catch (IllegalAccessException | InvocationTargetException e)//TODO exception handling
-				{
-					e.printStackTrace();
-				}
-			}
-			else property.setValue(val);
-		}
-
 		private String getString(JSONObject json)
 		{
 			String name=field.name();
 			return opt ? json.optString(name) : json.getString(name);
 		}
 
-		private long getNumber(JSONObject json)
+		private Integer getNumber(JSONObject json)
 		{
 			String name=field.name();
-			return opt ? json.optLong(name) : json.getLong(name);
+			return opt ? json.optInt(name) : json.getInt(name);
 		}
 
 		private Instant getDateTime(JSONObject json)
@@ -338,18 +319,41 @@ public abstract class AbstractAPIObject implements GW2APIObject
 
 		private Object getValue(JSONObject json)
 		{
-			GW2APIFieldType type=getSourceType();
+			return getValue(json, getSourceType());
+		}
+
+		private Object getValue(JSONObject json, GW2APIFieldType type)
+		{
+			Object val;
 			switch(type)
 			{
-			case STRING: return getString(json);
-			case NUMBER: return getNumber(json);
-			case DATETIME: return getDateTime(json);
-			case ARRAY: return getArray(json);
+			case STRING: val=getString(json); break;
+			case NUMBER: val=getNumber(json); break;
+			case DATETIME: val=getDateTime(json); break;
+			case ARRAY: val=getArray(json); break;
 			case OBJECT: throw new UnsupportedOperationException("Object source type is not supported.");//TODO object source type
 			// return getObject(json);
 			case DEFAULT:
 			default: throw new IllegalArgumentException("Unknown field source type: "+type);
 			}
+			return processValue(val);
+		}
+
+		private Object processValue(Object val)
+		{
+			if (factory!=null)
+			{
+				try
+				{
+					if (!field.targetType().equals(Object.class)) val = factory.invoke(null, val);
+					else val = factory.invoke(GW2API.inst(), val);
+				}
+				catch (IllegalAccessException | InvocationTargetException e)//TODO exception handling
+				{
+					e.printStackTrace();
+				}
+			}
+			return val;
 		}
 
 		private void processObject(JSONObject json)
@@ -393,14 +397,14 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		private void processNumberArray(JSONArray json)
 		{
 			ListProperty list=(ListProperty)property;
-			for (int i=0; i<json.length(); i++) list.add(json.getLong(i));
+			for (int i=0; i<json.length(); i++) list.add(processValue(json.getLong(i)));
 		}
 
 		@SuppressWarnings("unchecked")
 		private void processStringArray(JSONArray json)
 		{
 			ListProperty list=(ListProperty)property;
-			for (int i=0; i<json.length(); i++) list.add(json.getString(i));
+			for (int i=0; i<json.length(); i++) list.add(processValue(json.getString(i)));
 		}
 
 		private GW2APIFieldType getSourceType()

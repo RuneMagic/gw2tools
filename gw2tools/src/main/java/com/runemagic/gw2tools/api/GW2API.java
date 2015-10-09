@@ -28,8 +28,9 @@ public class GW2API
 		return instance;
 	}
 
-	public World getWorld(int id)
+	public World getWorld(Integer id)
 	{
+		if (id==null) return null;
 		synchronized (worlds)
 		{
 			World ret = worlds.get(id);
