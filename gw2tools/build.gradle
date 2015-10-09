@@ -6,7 +6,7 @@ group 'com.runemagic'
 project.sourceCompatibility = 1.8
 project.targetCompatibility = 1.8
 project.distsDirName = "../dist"
-ext.mainClassName = 'com.runemagic.gw2tool.GW2Tools'
+ext.mainClassName = 'com.runemagic.gw2tools.GW2Tools'
 
 project.defaultTasks 'build'
 
