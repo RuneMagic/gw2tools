@@ -100,7 +100,29 @@ public class MaterialProcessingCalculator
 		addMaterialPair("Silk", 3, 19748, 19747);
 		addMaterialPair("Elder Wood", 3, 19722, 19709);
 		addMaterialPair("Thick Leather", 3, 19729, 19735);
-		//TODO the rest
+		//t4
+		addMaterialPair("Platinum", 2, 19702, 19686);
+		addMaterialPair("Linen", 2, 19743, 19744);
+		addMaterialPair("Hard Wood", 3, 19724, 19711);
+		addMaterialPair("Rugged Leather", 2, 19731, 19736);
+		//t3
+		addMaterialPair("Gold", 2, 19698, 19682);
+		addMaterialPair("Cotton", 2, 19741, 19742);
+		addMaterialPair("Seasoned Wood", 3, 19727, 19714);
+		addMaterialPair("Coarse Leather", 2, 19730, 19734);
+		//t2
+		addMaterialPair("Iron", 3, 19699, 19683);
+		addMaterialPair("Silver", 2, 19703, 19787);
+		addMaterialPair("Wool", 2, 19739, 19740);
+		addMaterialPair("Soft Wood", 4, 19726, 19713);
+		addMaterialPair("Thin Leather", 2, 19728, 19733);
+		//t1
+		addMaterialPair("Copper", 2, 19697, 19680);
+		addMaterialPair("Jute", 2, 19718, 19720);
+		addMaterialPair("Green Wood", 3, 19723, 19710);
+		addMaterialPair("Rawhide Leather", 2, 19719, 19738);
+
+		//TODO alloys
 	}
 
 	private void addMaterialPair(String name, int amount, int raw, int proc)
