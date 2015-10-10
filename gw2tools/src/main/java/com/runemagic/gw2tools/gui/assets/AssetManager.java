@@ -95,6 +95,8 @@ public class AssetManager
 
 	public Image getAsset(String name)
 	{
+		File asset = new File(Reference.DIR_ASSETS + File.separator + name);
+		if(!asset.exists())return null;
 		try
 		{
 			FileInputStream fis = new FileInputStream(Reference.DIR_ASSETS + File.separator + name);
