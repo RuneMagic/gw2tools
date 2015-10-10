@@ -270,6 +270,9 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			case NUMBER:
 				property.setValue(getValue(json));
 				break;
+			case BOOLEAN:
+				property.setValue(getValue(json));
+				break;
 			case DATETIME:
 				property.setValue(getValue(json));
 				break;
@@ -294,6 +297,12 @@ public abstract class AbstractAPIObject implements GW2APIObject
 		{
 			String name=field.name();
 			return opt ? json.optInt(name) : json.getInt(name);
+		}
+
+		private Boolean getBoolean(JSONObject json)
+		{
+			String name=field.name();
+			return opt ? json.optBoolean(name) : json.getBoolean(name);
 		}
 
 		private Instant getDateTime(JSONObject json)
@@ -328,6 +337,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			{
 			case STRING: val=getString(json); break;
 			case NUMBER: val=getNumber(json); break;
+			case BOOLEAN: val=getBoolean(json); break;
 			case DATETIME: val=getDateTime(json); break;
 			case ARRAY: val=getArray(json); break;
 			case OBJECT: throw new UnsupportedOperationException("Object source type is not supported.");//TODO object source type
@@ -386,6 +396,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			case NUMBER:
 				processNumberArray(json);
 				break;
+			case BOOLEAN: throw new UnsupportedOperationException("Arrays of booleans are not supported.");
 			case DATETIME: throw new UnsupportedOperationException("Arrays of times are not supported.");
 			case ARRAY: throw new UnsupportedOperationException("Arrays of arrays are not supported.");
 			case OBJECT: throw new UnsupportedOperationException("Arrays of objects are not supported.");
@@ -413,6 +424,7 @@ public abstract class AbstractAPIObject implements GW2APIObject
 			{
 				if (property instanceof StringProperty) return GW2APIFieldType.STRING;
 				if (property instanceof IntegerProperty || property instanceof LongProperty) return GW2APIFieldType.NUMBER;
+				if (property instanceof BooleanProperty) return GW2APIFieldType.BOOLEAN;
 				if (property instanceof ListProperty) return GW2APIFieldType.ARRAY;
 				throw new IllegalArgumentException("Unknown property class: "+property.getClass());
 			}

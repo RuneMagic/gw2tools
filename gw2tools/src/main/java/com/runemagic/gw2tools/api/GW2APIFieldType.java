@@ -9,6 +9,7 @@ public enum GW2APIFieldType
 
 	STRING(String.class),
 	NUMBER(Integer.class),
+	BOOLEAN(Boolean.class),
 	DATETIME(Instant.class),
 	ARRAY(List.class),
 	OBJECT(Object.class);
