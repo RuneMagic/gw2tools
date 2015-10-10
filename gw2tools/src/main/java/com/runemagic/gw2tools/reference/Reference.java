@@ -9,6 +9,9 @@ public class Reference
     }
 
 
+    public static final String DIR_APP = System.getenv("APPDATA") + "\\gw2tools";
+    public static final String DIR_ASSETS = DIR_APP + "\\assets";
+
     /**
      * Registry paths
      */

@@ -121,6 +121,20 @@ public class ApplicationManager
         if(showingProperty != null)showingProperty.set(true);
     }
 
+    public void setSimpleOverlay(Parent content)
+    {
+        BorderPane con = new BorderPane();
+        BorderPane background = new BorderPane(content);
+        BorderPane.setMargin(background, new Insets(50));
+
+        background.setStyle("-fx-background-color: rgba(41, 41, 41, 0);");
+        contentPane.setEffect(new BoxBlur());
+
+        con.setCenter(background);
+        con.setPickOnBounds(true);
+        overlayPane.setCenter(con);
+    }
+
     public void hideOverlay()
     {
         overlayPane.setCenter(null);

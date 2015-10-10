@@ -27,6 +27,7 @@ import com.faelar.util.javafx.Icons;
 import com.faelar.util.javafx.JFXTools;
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.gui.ApplicationManager;
+import com.runemagic.gw2tools.gui.assets.AssetManager;
 import com.runemagic.gw2tools.reference.Reference;
 import com.runemagic.gw2tools.settings.ApplicationSettings;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
@@ -49,6 +50,7 @@ public class GW2Tools extends Application
 	private Stage primaryStage;
 	private BorderPane applicationPane;
 
+	private AssetManager assets;
 	private ResourceManager res;
 	private ThreadManager threads;
 	private FXSettingsManager settings;
@@ -65,6 +67,7 @@ public class GW2Tools extends Application
 		gw2tool=this;
 		res=new ResourceManager("com/runemagic/gw2tools/res/", "res");
 		threads=new GlobalPoolThreadManager();
+		assets = new AssetManager();
 
 		settings = new FXSettingsManager();
 		settings.registerSerializer(FXSettingsSerializerType.FX_PREFERENCES, new PreferencesFXSettingsSerializer());
@@ -227,7 +230,6 @@ public class GW2Tools extends Application
 
 		applicationPane.setCenter(loadFXML("loginView.fxml"));
 
-
 		addMainCSS(mainScene);
 		new ViewBoundsSerializer().switchView(primaryStage, Reference.REGISTRY_WINDOW_BOUNDS, undecorator.maximizeProperty(), true);
 		primaryStage.setScene(mainScene);
@@ -298,6 +300,11 @@ public class GW2Tools extends Application
 	public ApplicationSettings getAppSettings()
 	{
 		return appSettings;
+	}
+
+	public AssetManager getAssets()
+	{
+		return assets;
 	}
 
 	public static void showAndWait(Parent root)

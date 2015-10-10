@@ -5,9 +5,14 @@ import java.util.Arrays;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 
 import com.runemagic.gw2tools.GW2Tools;
 import com.runemagic.gw2tools.api.APIKey;
@@ -27,12 +32,20 @@ public class LoginController
     private TextField txtAPIKey;
 
     @FXML
-    private CheckBox chkbxRememberKey;
+    private BorderPane overlayPane;
 
+    @FXML
+    private StackPane stackPane;
+
+    @FXML
+    private StackPane contentPane;
+
+    @FXML
+    private CheckBox chkbxRememberKey;
 
     public void initialize()
     {
-        txtAPIKey.textProperty().addListener((obs,ov,nv)->{
+        txtAPIKey.textProperty().addListener((obs, ov, nv) -> {
             ObservableList<String> styleClass = txtAPIKey.getStyleClass();
             if (!APIKey.isValid(nv))
             {
@@ -52,6 +65,28 @@ public class LoginController
             txtAPIKey.setText(apiKey);
             chkbxRememberKey.setSelected(true);
         }
+
+        GW2Tools.inst().getAssets().getGW2Assets(this);
+    }
+
+    public void setSimpleOverlay(Parent content)
+    {
+        BorderPane con = new BorderPane();
+        BorderPane background = new BorderPane(content);
+        BorderPane.setMargin(background, new Insets(50));
+
+        background.setStyle("-fx-background-color: rgba(41, 41, 41, 0);");
+        contentPane.setEffect(new BoxBlur());
+
+        con.setCenter(background);
+        con.setPickOnBounds(true);
+        overlayPane.setCenter(con);
+    }
+
+    public void hideOverlay()
+    {
+        overlayPane.setCenter(null);
+        contentPane.setEffect(null);
     }
 
     @FXML
