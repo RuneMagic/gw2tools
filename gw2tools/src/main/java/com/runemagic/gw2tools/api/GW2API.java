@@ -30,6 +30,11 @@ public class GW2API
 		return instance;
 	}
 
+	public GW2APISource getSource()
+	{
+		return source;
+	}
+
 	public GW2Item getItem(Integer id)
 	{
 		if (id==null) return null;
