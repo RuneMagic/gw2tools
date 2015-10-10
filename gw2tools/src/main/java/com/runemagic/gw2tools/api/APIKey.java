@@ -2,6 +2,8 @@ package com.runemagic.gw2tools.api;
 
 import java.util.Objects;
 
+import com.runemagic.gw2tools.GW2Tools;
+
 public final class APIKey implements Comparable<APIKey>
 {
 	private final String key;
@@ -20,8 +22,8 @@ public final class APIKey implements Comparable<APIKey>
 	public static boolean isValid(String key)
 	{
 		if (key.length()>72) return false;//this is the only thing ANet specified so we keep it separate
-		if (!key.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{20}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) return false;
-		//TODO add an option to disable the regexp check in case ANet changes the format (the API key being 2 concatenated GUIDs is not in the "official" specification)
+		if (GW2Tools.inst().getAppSettings().noUnofficialValidation.get() &&
+				!key.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{20}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) return false;
 		return true;
 	}
 
