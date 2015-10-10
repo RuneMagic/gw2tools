@@ -2,6 +2,7 @@ package com.runemagic.gw2tools.gui.components;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -73,7 +74,7 @@ public class CharacterListCell<T> extends ListCell<GW2Character>
 
 			//Bindings
 			lblName.textProperty().bind(Bindings.concat(character.nameProperty(), " (", character.levelProperty(), ")"));
-			lblGuild.textProperty().bind(Bindings.concat(Bindings.selectString(character.guildProperty(), "name"), " [", Bindings.selectString(character.guildProperty(), "tag"), "]"));
+			lblGuild.textProperty().bind(Bindings.when(character.guildProperty().isNotNull()).then(Bindings.concat(Bindings.selectString(character.guildProperty(), "name"), " [", Bindings.selectString(character.guildProperty(), "tag"), "]")).otherwise(new SimpleStringProperty("Not representing")));
 			lblAge.textProperty().bind(Bindings.concat(FontIcon.CLOCK_O.getCharAsString(), " ", character.formattedAgeProperty()));
 			lblDeaths.textProperty().bind(Bindings.concat(FontIcon.HEARTBEAT.getCharAsString(), " ", character.deathsProperty()));
 			lblGender.textProperty().bind(Bindings.createObjectBinding(() -> {
