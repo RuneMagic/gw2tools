@@ -1,9 +1,11 @@
 package com.runemagic.gw2tools.gui.components;
 
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -12,6 +14,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 
 import com.faelar.util.javafx.FontIcon;
+import com.runemagic.gw2tools.GW2Tools;
 import com.runemagic.gw2tools.api.character.GW2Character;
 
 public class CharacterListCell<T> extends ListCell<GW2Character>
@@ -22,18 +25,18 @@ public class CharacterListCell<T> extends ListCell<GW2Character>
 	private Label lblAge;
 	private Label lblGender;
 	private Label lblDeaths;
-	private ImageView imgProffesion;
-
+	private ImageView imgProfession;
 
 	@Override
 	protected void updateItem(GW2Character character, boolean empty)
 	{
 		super.updateItem(character, empty);
 
-		if(empty)
+		if (empty)
 		{
 			setGraphic(null);
-		}else
+		}
+		else
 		{
 			Label lblName = new Label();
 			Label lblGuild = new Label();
@@ -53,7 +56,6 @@ public class CharacterListCell<T> extends ListCell<GW2Character>
 			lblGuild.setFont(Font.font("System", FontPosture.ITALIC, 17));
 			lblGuild.setStyle("-fx-text-fill: grey;");
 
-
 			//construction
 			HBox contentStats = new HBox(15);
 			contentStats.getChildren().addAll(lblGender, lblDeaths, lblAge);
@@ -69,13 +71,24 @@ public class CharacterListCell<T> extends ListCell<GW2Character>
 			content.setFillHeight(true);
 			content.getChildren().addAll(imgProffesion, contentLabels);
 
-
 			//Bindings
 			lblName.textProperty().bind(Bindings.concat(character.nameProperty(), " (", character.levelProperty(), ")"));
 			lblGuild.textProperty().bind(Bindings.concat(Bindings.selectString(character.guildProperty(), "name"), " [", Bindings.selectString(character.guildProperty(), "tag"), "]"));
 			lblAge.textProperty().bind(Bindings.concat(FontIcon.CLOCK_O.getCharAsString(), " ", character.formattedAgeProperty()));
 			lblDeaths.textProperty().bind(Bindings.concat(FontIcon.HEARTBEAT.getCharAsString(), " ", character.deathsProperty()));
-			lblGender.textProperty().bind(Bindings.createObjectBinding(() -> character.genderProperty().getValue().getIcon().getCharAsString(), character.genderProperty()));
+			lblGender.textProperty().bind(Bindings.createObjectBinding(() -> {
+
+				if (character.genderProperty().getValue() == null) return null;
+
+				return character.genderProperty().getValue().getIcon().getCharAsString();
+			}, character.genderProperty()));
+
+			ObjectBinding<Image> imageBinding = Bindings.createObjectBinding(() -> {
+				if (character.professionProperty().getValue() == null) return null;
+				return GW2Tools.inst().getAssets().getAsset("icon_" + character.getProfession().getName().toLowerCase() + "_big.png");
+			}, character.professionProperty());
+			imgProffesion.imageProperty().bind(imageBinding);
+
 
 			setGraphic(content);
 		}

@@ -3,6 +3,8 @@ package com.runemagic.gw2tools.gui.assets;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javafx.application.Platform;
+import javafx.scene.image.Image;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -88,6 +91,19 @@ public class AssetManager
 				throw new RuntimeException("failed to load assets!", e);
 			}
 		});
+	}
+
+	public Image getAsset(String name)
+	{
+		try
+		{
+			FileInputStream fis = new FileInputStream(Reference.DIR_ASSETS + File.separator + name);
+			return new Image(fis);
+		}
+		catch (FileNotFoundException e)
+		{
+			throw new RuntimeException("Could not load asset " + name, e);
+		}
 	}
 
 	private void initDirectories()
