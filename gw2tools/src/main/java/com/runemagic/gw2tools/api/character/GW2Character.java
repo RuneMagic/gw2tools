@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
+import com.runemagic.gw2tools.api.GW2API;
 import com.runemagic.gw2tools.api.GW2APIField;
 import com.runemagic.gw2tools.api.GW2APIFieldType;
 import com.runemagic.gw2tools.api.GW2APISource;
@@ -73,13 +74,13 @@ public class GW2Character extends AuthenticatedAPIObject
 		buildPVP.set(new CharacterBuild());
 		buildWVW.set(new CharacterBuild());
 
-		formattedAge.bind(Bindings.createStringBinding(()-> StringTools.formatSecondsLong(age.get()), age));
+		formattedAge.bind(Bindings.createStringBinding(() -> StringTools.formatSecondsLong(age.get()), age));
 	}
 
 	@Override
 	protected void initResources()
 	{
-		addAPIv2Resource(()->API_RESOURCE_CHARACTERS + "/" + getURLEncodedName(), this, this::updateCharacter);
+		addAPIv2Resource(() -> API_RESOURCE_CHARACTERS + "/" + getURLEncodedName(), this, this::updateCharacter);
 	}
 
 	private String getURLEncodedName()
@@ -90,15 +91,6 @@ public class GW2Character extends AuthenticatedAPIObject
 	private void updateCharacter(String data)
 	{
 		JSONObject json=new JSONObject(data);
-		/*name.set(json.getString("name"));
-		race.set(CharacterRace.byName(json.getString("race")));
-		gender.set(CharacterGender.byName(json.getString("gender")));
-		profession.set(CharacterProfession.byName(json.getString("profession")));
-		level.set(json.getInt("level"));
-		guild.set(GW2API.inst().getGuild(json.optString("guild", null)));
-		created.set(Instant.parse(json.getString("created")));
-		age.set(json.getLong("age"));
-		deaths.set(json.getInt("deaths"));*/
 		//TODO crafting
 		JSONObject specs=json.optJSONObject("specializations");
 		if (specs!=null)
@@ -113,31 +105,35 @@ public class GW2Character extends AuthenticatedAPIObject
 	{
 		if (json!=null)
 		{
-			build.setSpec1(readSpecialization(json.getJSONObject(0)));
-			build.setSpec2(readSpecialization(json.getJSONObject(1)));
-			build.setSpec3(readSpecialization(json.getJSONObject(2)));
+			updateSpecializationSlot(build.getSpec1(), json.getJSONObject(0));
+			updateSpecializationSlot(build.getSpec2(), json.getJSONObject(1));
+			updateSpecializationSlot(build.getSpec3(), json.getJSONObject(2));
 		}
 		else
 		{
-			build.setSpec1(null);
-			build.setSpec2(null);
-			build.setSpec3(null);
+			updateSpecializationSlot(build.getSpec1(), null);
+			updateSpecializationSlot(build.getSpec2(), null);
+			updateSpecializationSlot(build.getSpec3(), null);
 		}
 	}
 
-	private CharacterSpecialization readSpecialization(JSONObject json)
+	private void updateSpecializationSlot(SpecializationSlot spec, JSONObject json)
 	{
-		CharacterSpecialization spec=new CharacterSpecialization(json.getInt("id"));
-		JSONArray traitsArray=json.getJSONArray("traits");
-		spec.setTrait1(readTrait(traitsArray.getInt(0)));
-		spec.setTrait2(readTrait(traitsArray.getInt(1)));
-		spec.setTrait3(readTrait(traitsArray.getInt(2)));
-		return spec;
-	}
-
-	private CharacterTrait readTrait(int id)
-	{
-		return CharacterTrait.of(id);
+		if (json!=null)
+		{
+			spec.setId(json.getInt("id"));
+			JSONArray traitsArray = json.getJSONArray("traits");
+			spec.setTrait1(GW2API.inst().getTrait(traitsArray.getInt(0)));
+			spec.setTrait2(GW2API.inst().getTrait(traitsArray.getInt(1)));
+			spec.setTrait3(GW2API.inst().getTrait(traitsArray.getInt(2)));
+		}
+		else
+		{
+			spec.setId(null);
+			spec.setTrait1(null);
+			spec.setTrait2(null);
+			spec.setTrait3(null);
+		}
 	}
 
 	public String getName()
@@ -279,4 +275,5 @@ public class GW2Character extends AuthenticatedAPIObject
 	{
 		return formattedAge;
 	}
+
 }

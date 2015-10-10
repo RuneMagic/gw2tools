@@ -7,7 +7,9 @@ import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.api.account.TokenInfo;
 import com.runemagic.gw2tools.api.account.World;
+import com.runemagic.gw2tools.api.character.CharacterTrait;
 import com.runemagic.gw2tools.api.character.GW2Character;
+import com.runemagic.gw2tools.api.character.SpecializationInfo;
 import com.runemagic.gw2tools.api.items.GW2Item;
 
 public class GW2API
@@ -17,6 +19,8 @@ public class GW2API
 	private final Map<String, Guild> guilds=new ConcurrentHashMap<>();
 	private final Map<Integer, World> worlds=new ConcurrentHashMap<>();
 	private final Map<Integer, GW2Item> items=new ConcurrentHashMap<>();
+	private final Map<Integer, CharacterTrait> traits=new ConcurrentHashMap<>();
+	private final Map<Integer, SpecializationInfo> specs=new ConcurrentHashMap<>();
 
 	private final GW2APISource source;
 
@@ -33,6 +37,40 @@ public class GW2API
 	public GW2APISource getSource()
 	{
 		return source;
+	}
+
+	public SpecializationInfo getSpecialization(Integer id)
+	{
+		if (id==null) return null;
+		synchronized (specs)
+		{
+			SpecializationInfo ret = specs.get(id);
+			//TODO validate specialization id
+			if (ret == null)
+			{
+				ret = new SpecializationInfo(source, id);
+				specs.put(id, ret);
+				ret.update();//TODO better update schedule
+			}
+			return ret;
+		}
+	}
+
+	public CharacterTrait getTrait(Integer id)
+	{
+		if (id==null) return null;
+		synchronized (traits)
+		{
+			CharacterTrait ret = traits.get(id);
+			//TODO validate trait id
+			if (ret == null)
+			{
+				ret = new CharacterTrait(source, id);
+				traits.put(id, ret);
+				ret.update();//TODO better update schedule
+			}
+			return ret;
+		}
 	}
 
 	public GW2Item getItem(Integer id)
