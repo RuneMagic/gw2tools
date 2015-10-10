@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.effect.BoxBlur;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -32,7 +31,7 @@ public class ApplicationManager
     private NavigationList navList;
     private HBox toolBar;
 
-    private AnchorPane topBar;
+    private HBox topBar;
     private HBox bottomBar;
 
     private ProgressBar bottomProgressBar;
@@ -173,7 +172,7 @@ public class ApplicationManager
 
     public void initTopBar()
     {
-        topBar = new AnchorPane();
+        topBar = new HBox();
         topBar.setPickOnBounds(false);
         topBar.setPrefWidth(640);
         topBar.setStyle("-fx-background-color: #333333");
@@ -209,7 +208,7 @@ public class ApplicationManager
         return toolBar;
     }
 
-    public AnchorPane getTopBar()
+    public HBox getTopBar()
     {
         return topBar;
     }

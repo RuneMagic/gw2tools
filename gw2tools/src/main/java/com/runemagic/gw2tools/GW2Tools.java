@@ -11,7 +11,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -38,6 +37,7 @@ import de.pat.fxsettings.FXSettingsManager;
 import de.pat.fxsettings.FXSettingsSerializerType;
 import de.pat.fxsettings.FXSettingsSheetPane;
 import de.pat.fxsettings.serializer.PreferencesFXSettingsSerializer;
+import de.pat.util.javafx.DialogTools;
 import de.pat.util.javafx.ViewBoundsSerializer;
 import insidefx.undecorator.Undecorator;
 
@@ -136,6 +136,7 @@ public class GW2Tools extends Application
 	public void start(Stage primaryStage) throws Exception
 	{
 		app = new ApplicationManager();
+		DialogTools.initOwner(primaryStage);
 		try
 		{
 			initSettings();
@@ -147,6 +148,10 @@ public class GW2Tools extends Application
 		{
 			e.printStackTrace();
 		}
+		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+			DialogTools.createExceptionDialog(e, "Unexpected Exception", "GW2Tools encountered an unexpected Exception", e.getMessage());
+			System.exit(-1);
+		});
 	}
 
 	public ThreadManager getThreadManager()
@@ -214,7 +219,7 @@ public class GW2Tools extends Application
 		undecorator.maximizeProperty().addListener(barToggle);
 		undecorator.fullscreenProperty().addListener(barToggle);
 
-		AnchorPane top = app.getTopBar();
+		HBox top = app.getTopBar();
 		undecorator.setAsStageDraggable(primaryStage, top);
 
 		initToolBar();
@@ -237,11 +242,8 @@ public class GW2Tools extends Application
 		HBox tool = app.getToolBar();
 
 		Button btnSettings = Icons.createIconButton(FontIcon.GEAR, "Settings", 18);
-		btnSettings.setOnAction((e) -> {
-			app.setOverlay("Application Settings", appSettingsSheet, Icons.createIconLabel(FontIcon.GEAR), appSettingsSheet.isShowingProperty());
-		});
+		btnSettings.setOnAction((e) -> app.setOverlay("Application Settings", appSettingsSheet, Icons.createIconLabel(FontIcon.GEAR), appSettingsSheet.isShowingProperty()));
 		tool.getChildren().add(btnSettings);
-
 	}
 
 	private void initViews() throws IOException
