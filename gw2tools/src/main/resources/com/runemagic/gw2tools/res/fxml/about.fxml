@@ -44,7 +44,7 @@
             <Font size="18.0" />
          </font>
       </Hyperlink>
-      <Hyperlink fx:id="linkVersion" alignment="CENTER" contentDisplay="CENTER" layoutX="276.0" layoutY="75.0" prefHeight="35.0" prefWidth="130.0" text="Version - 0.0.0" AnchorPane.leftAnchor="275.0" AnchorPane.rightAnchor="275.0">
+      <Hyperlink fx:id="linkVersion" alignment="CENTER" contentDisplay="CENTER" layoutX="276.0" layoutY="75.0" onAction="#onClickVersion" prefHeight="35.0" prefWidth="130.0" text="Version - 0.0.0" AnchorPane.leftAnchor="275.0" AnchorPane.rightAnchor="275.0">
          <font>
             <Font size="18.0" />
          </font>

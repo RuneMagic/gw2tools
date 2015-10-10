@@ -1,5 +1,13 @@
 package com.runemagic.gw2tools.gui.controller;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.print.attribute.URISyntax;
+
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -32,6 +40,15 @@ public class AboutController
 
 	@FXML
 	private Label lblTitle;
+
+	@FXML void onClickVersion(ActionEvent event)
+	{
+		try{
+			Desktop.getDesktop().browse(new URI("http://github.com/RuneMagic/gw2tools/releases"));
+		} catch (URISyntaxException | IOException ex) {
+			//There's a problem with opening the link
+		}
+	}
 
 
 	@FXML void onClickFaelar(MouseEvent event)
