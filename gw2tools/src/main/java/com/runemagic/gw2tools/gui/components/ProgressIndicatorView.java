@@ -33,7 +33,7 @@ public class ProgressIndicatorView extends HBox
 		setSpacing(15);
 		setPrefSize(550, 115);
 		setMaxSize(550, 115);
-		setStyle("-fx-border-color: grey; -fx-border-width: 3; -fx-background-color: rgba(58, 58, 58, 0.9);");
+		setStyle("-fx-border-color: grey; -fx-border-width: 3; -fx-background-color: rgba(58, 58, 58, 0.95);");
 
 		lblTitle.setFont(Font.font("System", FontWeight.BOLD, 29));
 		lblText.setFont(Font.font("System", FontPosture.ITALIC, 17));

@@ -2,7 +2,6 @@ package com.runemagic.gw2tools.gui.controller;
 
 import java.util.Arrays;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -11,8 +10,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 
 import com.runemagic.gw2tools.GW2Tools;
 import com.runemagic.gw2tools.api.APIKey;
@@ -22,107 +24,108 @@ import com.runemagic.gw2tools.api.GW2APIException;
 public class LoginController
 {
 
-    @FXML
-    private Button btnSkip;
+	@FXML
+	private Button btnSkip;
 
-    @FXML
-    private Button btnApply;
+	@FXML
+	private Button btnApply;
 
-    @FXML
-    private TextField txtAPIKey;
+	@FXML
+	private TextField txtAPIKey;
 
-    @FXML
-    private BorderPane overlayPane;
+	@FXML
+	private BorderPane overlayPane;
 
-    @FXML
-    private StackPane stackPane;
+	@FXML
+	private StackPane stackPane;
 
-    @FXML
-    private StackPane contentPane;
+	@FXML
+	private StackPane contentPane;
 
-    @FXML
-    private CheckBox chkbxRememberKey;
+	@FXML
+	private CheckBox chkbxRememberKey;
 
-    public void initialize()
-    {
-        txtAPIKey.textProperty().addListener((obs, ov, nv) -> {
-            ObservableList<String> styleClass = txtAPIKey.getStyleClass();
-            if (!APIKey.isValid(nv))
-            {
-                styleClass.removeAll("field-ok");
-                if (!styleClass.contains("field-error")) styleClass.add("field-error");
-            }
-            else
-            {
-                styleClass.removeAll("field-error");
-                if (!styleClass.contains("field-ok")) styleClass.add("field-ok");
-            }
-        });
+	private DropShadow validOutline = new DropShadow(6, Color.LIME);
+	private DropShadow invalidOutline = new DropShadow(6, Color.RED);
 
-        String apiKey = GW2Tools.inst().getAppSettings().apiKey.getValue();
-        if(apiKey != null && apiKey.length() > 0)
-        {
-            txtAPIKey.setText(apiKey);
-            chkbxRememberKey.setSelected(true);
-        }
+	public void initialize()
+	{
+		validOutline.setInput(new Glow());
+		invalidOutline.setInput(new Glow());
 
-        GW2Tools.inst().getAssets().updateGW2Assets(this);
-    }
+		txtAPIKey.textProperty().addListener((obs, ov, nv) -> {
+			if (!APIKey.isValid(nv))
+			{
+				txtAPIKey.setEffect(invalidOutline);
+			}
+			else
+			{
+				txtAPIKey.setEffect(validOutline);
+			}
+		});
 
-    public void setSimpleOverlay(Parent content)
-    {
-        BorderPane con = new BorderPane();
-        BorderPane background = new BorderPane(content);
-        BorderPane.setMargin(background, new Insets(50));
+		String apiKey = GW2Tools.inst().getAppSettings().apiKey.getValue();
+		if (apiKey != null && apiKey.length() > 0)
+		{
+			txtAPIKey.setText(apiKey);
+			chkbxRememberKey.setSelected(true);
+		}
 
-        background.setStyle("-fx-background-color: rgba(41, 41, 41, 0);");
-        contentPane.setEffect(new BoxBlur());
+		GW2Tools.inst().getAssets().updateGW2Assets(this);
+	}
 
-        con.setCenter(background);
-        con.setPickOnBounds(true);
-        overlayPane.setCenter(con);
-    }
+	public void setSimpleOverlay(Parent content)
+	{
+		BorderPane con = new BorderPane();
+		BorderPane background = new BorderPane(content);
+		BorderPane.setMargin(background, new Insets(50));
 
-    public void hideOverlay()
-    {
-        overlayPane.setCenter(null);
-        contentPane.setEffect(null);
-    }
+		background.setStyle("-fx-background-color: rgba(41, 41, 41, 0);");
+		contentPane.setEffect(new BoxBlur());
 
-    @FXML
-    void onSkip(ActionEvent event)
-    {
-        showApplication();
-    }
+		con.setCenter(background);
+		con.setPickOnBounds(true);
+		overlayPane.setCenter(con);
+	}
 
-    @FXML
-    void onApply(ActionEvent event)
-    {
-        APIKey apiKey;
-        try
-        {
-            apiKey = APIKey.of(txtAPIKey.getText());
-        }
-        catch (GW2APIException e)
-        {
-            //TODO feedback
-            return;
-        }
+	public void hideOverlay()
+	{
+		overlayPane.setCenter(null);
+		contentPane.setEffect(null);
+	}
 
-        GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey.getKey());
-        if(!chkbxRememberKey.isSelected())
-        {
-            GW2Tools.inst().getAppSettings().apiKey.setValue(null);
-        }
-        GW2Tools.inst().getSettingsManager().saveFXSettingsSheet(GW2Tools.inst().getAppSettings(), Arrays.asList("apiKey"));//TODO hacked saved fix!
-        GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey.getKey());
-        GW2Tools.inst().setAccount(GW2API.inst().getAccount(apiKey));
-        showApplication();
-    }
+	@FXML void onSkip(ActionEvent event)
+	{
+		showApplication();
+	}
 
-    private void showApplication()
-    {
-        GW2Tools.inst().getApplicationPane().setCenter(GW2Tools.inst().getApp().getRootPane());
-    }
+	@FXML void onApply(ActionEvent event)
+	{
+		APIKey apiKey;
+		try
+		{
+			apiKey = APIKey.of(txtAPIKey.getText());
+		}
+		catch (GW2APIException e)
+		{
+			//TODO feedback
+			return;
+		}
+
+		GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey.getKey());
+		if (!chkbxRememberKey.isSelected())
+		{
+			GW2Tools.inst().getAppSettings().apiKey.setValue(null);
+		}
+		GW2Tools.inst().getSettingsManager().saveFXSettingsSheet(GW2Tools.inst().getAppSettings(), Arrays.asList("apiKey"));//TODO hacked saved fix!
+		GW2Tools.inst().getAppSettings().apiKey.setValue(apiKey.getKey());
+		GW2Tools.inst().setAccount(GW2API.inst().getAccount(apiKey));
+		showApplication();
+	}
+
+	private void showApplication()
+	{
+		GW2Tools.inst().getApplicationPane().setCenter(GW2Tools.inst().getApp().getRootPane());
+	}
 
 }

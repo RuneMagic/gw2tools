@@ -173,14 +173,16 @@ public class ApplicationManager
         bottomBar.setPickOnBounds(false);
         bottomBar.setPrefHeight(15);
         bottomBar.setPrefWidth(640);
-        bottomBar.setStyle("-fx-background-color: #333333");
+		bottomBar.setPadding(new Insets(0,0,3,0));
+//		bottomBar.setStyle("-fx-border-color: rgb(57, 57, 57); -fx-border-width: 1; -fx-background-color:  rgb(33, 33, 33);");
 
         bottomProgressBar = new ProgressBar();
-        bottomProgressBar.setPrefWidth(125);
+        bottomProgressBar.setPrefWidth(130);
         bottomProgressBar.setProgress(0);
+		bottomProgressBar.setPadding(new Insets(0,0,0,5));
 
         bottomStatusLabel = new Label("Ready");
-        bottomStatusLabel.setStyle("-fx-text-fill: lightgrey !IMPORTANT");
+        bottomStatusLabel.setStyle("-fx-text-fill: grey !IMPORTANT");
         bottomBar.getChildren().addAll(bottomProgressBar, bottomStatusLabel);
     }
 
