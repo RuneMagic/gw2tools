@@ -1,18 +1,16 @@
 package com.runemagic.gw2tools.gui.controller;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.print.attribute.URISyntax;
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+
+import com.runemagic.gw2tools.GW2Tools;
 
 public class AboutController
 {
@@ -41,15 +39,17 @@ public class AboutController
 	@FXML
 	private Label lblTitle;
 
-	@FXML void onClickVersion(ActionEvent event)
+	private DropShadow dropShadow = new DropShadow(20, Color.rgb(254, 207, 57));
+
+	public void initialize()
 	{
-		try{
-			Desktop.getDesktop().browse(new URI("http://github.com/RuneMagic/gw2tools/releases"));
-		} catch (URISyntaxException | IOException ex) {
-			//There's a problem with opening the link
-		}
+		dropShadow.setInput(new Glow());
 	}
 
+	@FXML void onClickVersion(ActionEvent event)
+	{
+		GW2Tools.inst().getHostServices().showDocument("http://github.com/RuneMagic/gw2tools/releases");
+	}
 
 	@FXML void onClickFaelar(MouseEvent event)
 	{
@@ -73,12 +73,12 @@ public class AboutController
 
 	@FXML void onMouseEnteredCodered(MouseEvent event)
 	{
-
+		imgCodered.setEffect(dropShadow);
 	}
 
 	@FXML void onMouseExitedCodered(MouseEvent event)
 	{
-
+		imgCodered.setEffect(null);
 	}
 
 	@FXML void onClickPatosaur(MouseEvent event)
