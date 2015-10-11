@@ -66,7 +66,7 @@ public class LoginController
             chkbxRememberKey.setSelected(true);
         }
 
-        GW2Tools.inst().getAssets().getGW2Assets(this);
+        GW2Tools.inst().getAssets().updateGW2Assets(this);
     }
 
     public void setSimpleOverlay(Parent content)
