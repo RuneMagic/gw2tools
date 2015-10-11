@@ -1,18 +1,18 @@
 package de.pat.fxsettings.modules;
 
 
+import java.util.Objects;
+
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.Property;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
+
 import de.pat.fxsettings.MaxValue;
 import de.pat.fxsettings.MinValue;
 import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
 import de.pat.fxsettings.sheet.FXSubmitResponse;
 import de.pat.util.javafx.components.NumberTextField;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.Property;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.GridPane;
-
-import java.util.Objects;
 
 public class IntegerFieldModule extends AbstractFXSettingsModule<Number>
 {
@@ -65,9 +65,7 @@ public class IntegerFieldModule extends AbstractFXSettingsModule<Number>
         setting.addListener((e, oldValue, newVal) -> {
             numberField.setText(String.valueOf(newVal));
         });
-        Label fieldLabel = new Label(getFieldName());
-        content.getChildren().addAll(fieldLabel, numberField);
-        GridPane.setConstraints(fieldLabel, 0, 0);
+        content.getChildren().add(numberField);
         GridPane.setConstraints(numberField, 1, 0);
 
         hasChanges = Bindings.createBooleanBinding(() -> !Objects.equals(numberField.getValueProperty().get(), setting.getValue()), numberField.getValueProperty(), setting);

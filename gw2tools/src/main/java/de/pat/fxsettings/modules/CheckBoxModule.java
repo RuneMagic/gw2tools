@@ -1,15 +1,15 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
+import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
-import java.util.Objects;
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 public class CheckBoxModule extends AbstractFXSettingsModule<Boolean>
 {
@@ -30,11 +30,9 @@ public class CheckBoxModule extends AbstractFXSettingsModule<Boolean>
         setting.addListener((e, oldValue, newVal) -> {
             checkbox.setSelected(newVal);
         });
-        Label fieldLabel = new Label(getFieldName());
-        GridPane.setConstraints(fieldLabel, 0, 0);
-        GridPane.setConstraints(checkbox, 1, 0);
-        content.getChildren().addAll(fieldLabel, checkbox);
 
+        GridPane.setConstraints(checkbox, 1, 0);
+        content.getChildren().add(checkbox);
         hasChanges = Bindings.createBooleanBinding(() -> !Objects.equals(checkbox.selectedProperty().get(), setting.getValue()), checkbox.selectedProperty(), setting);
     }
 

@@ -1,15 +1,16 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+
 import org.controlsfx.control.CheckListView;
+
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 
 public class CheckBoxListViewModule<T> extends AbstractFXSettingsModule<T>
@@ -35,10 +36,8 @@ public class CheckBoxListViewModule<T> extends AbstractFXSettingsModule<T>
             {
                 checkListView.getCheckModel().check(item);
             }
-        });
-        Label fieldLabel = new Label(getFieldName());
-        content.getChildren().addAll(fieldLabel, checkListView);
-        GridPane.setConstraints(fieldLabel, 0, 0);
+});
+        content.getChildren().add(checkListView);
         GridPane.setConstraints(checkListView, 1, 0);
 
         hasChanges = Bindings.createBooleanBinding(() -> !settings.containsAll(checkListView.getCheckModel().getCheckedItems()) || !checkListView.getCheckModel().getCheckedItems().containsAll(settings), checkListView.getCheckModel().getCheckedItems(), settings);

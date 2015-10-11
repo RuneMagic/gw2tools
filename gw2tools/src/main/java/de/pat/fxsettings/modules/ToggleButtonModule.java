@@ -1,15 +1,15 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
+import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 
-import java.util.Objects;
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 public class ToggleButtonModule extends AbstractFXSettingsModule<Boolean>
 {
@@ -30,10 +30,8 @@ public class ToggleButtonModule extends AbstractFXSettingsModule<Boolean>
         setting.addListener((e, oldValue, newVal) -> {
             toggleButton.setSelected(newVal);
         });
-        Label fieldLabel = new Label(getFieldName());
-        GridPane.setConstraints(fieldLabel, 0, 0);
         GridPane.setConstraints(toggleButton, 1, 0);
-        content.getChildren().addAll(fieldLabel, toggleButton);
+        content.getChildren().add(toggleButton);
 
         hasChanges = Bindings.createBooleanBinding(() -> !Objects.equals(toggleButton.selectedProperty().get(), setting.getValue()), toggleButton.selectedProperty(), setting);
     }

@@ -1,16 +1,16 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
+import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
-import java.util.Objects;
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 public class ComboBoxModule<T> extends AbstractFXSettingsModule<T>
 {
@@ -31,9 +31,7 @@ public class ComboBoxModule<T> extends AbstractFXSettingsModule<T>
         setting.addListener((e, oldValue, newVal) -> {
             comboBox.getSelectionModel().select(newVal);
         });
-        Label fieldLabel = new Label(getFieldName());
-        content.getChildren().addAll(fieldLabel, comboBox);
-        GridPane.setConstraints(fieldLabel, 0, 0);
+        content.getChildren().add(comboBox);
         GridPane.setConstraints(comboBox, 1, 0);
 
         if(setting.getValue() != null && !values.contains(setting.getValue()))setting.setValue(null);

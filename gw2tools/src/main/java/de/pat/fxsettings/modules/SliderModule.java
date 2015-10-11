@@ -1,10 +1,9 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.MaxValue;
-import de.pat.fxsettings.MinValue;
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
+import java.text.DecimalFormat;
+import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.geometry.Pos;
@@ -14,8 +13,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 
-import java.text.DecimalFormat;
-import java.util.Objects;
+import de.pat.fxsettings.MaxValue;
+import de.pat.fxsettings.MinValue;
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 public class SliderModule extends AbstractFXSettingsModule<Number>
 {
@@ -65,7 +66,6 @@ public class SliderModule extends AbstractFXSettingsModule<Number>
         setting.addListener((e, oldValue, newVal) -> {
             slider.setValue(getValue(newVal));
         });
-        Label fieldLabel = new Label(getFieldName());
 
         HBox controls = new HBox(5);
         HBox.setHgrow(slider, Priority.ALWAYS);
@@ -82,9 +82,8 @@ public class SliderModule extends AbstractFXSettingsModule<Number>
 
         controls.getChildren().addAll(slider, valueLabel);
 
-        content.getChildren().addAll(fieldLabel, controls);
+        content.getChildren().add(controls);
 
-        GridPane.setConstraints(fieldLabel, 0, 0);
         GridPane.setConstraints(controls, 1, 0);
 
         hasChanges = Bindings.createBooleanBinding(() -> !Objects.equals(slider.valueProperty().get(), setting.getValue()), slider.valueProperty(), setting);

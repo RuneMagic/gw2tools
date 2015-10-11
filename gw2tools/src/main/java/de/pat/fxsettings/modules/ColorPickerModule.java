@@ -1,16 +1,16 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
+import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
 import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
-import java.util.Objects;
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 public class ColorPickerModule extends AbstractFXSettingsModule<Color>
 {
@@ -32,9 +32,7 @@ public class ColorPickerModule extends AbstractFXSettingsModule<Color>
         setting.addListener((e, oldValue, newVal) -> {
             datePicker.setValue(newVal);
         });
-        Label fieldLabel = new Label(getFieldName());
-        content.getChildren().addAll(fieldLabel, datePicker);
-        GridPane.setConstraints(fieldLabel, 0, 0);
+        content.getChildren().add(datePicker);
         GridPane.setConstraints(datePicker, 1, 0);
 
         hasChanges = Bindings.createBooleanBinding(() -> !Objects.equals(datePicker.valueProperty().get(), setting.getValue()), datePicker.valueProperty(), setting);

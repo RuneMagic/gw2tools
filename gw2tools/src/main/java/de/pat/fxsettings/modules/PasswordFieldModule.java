@@ -1,15 +1,15 @@
 package de.pat.fxsettings.modules;
 
 
-import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
-import de.pat.fxsettings.sheet.FXSubmitResponse;
+import java.util.Objects;
+
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.Property;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.layout.GridPane;
 
-import java.util.Objects;
+import de.pat.fxsettings.moduletypes.AbstractFXSettingsModule;
+import de.pat.fxsettings.sheet.FXSubmitResponse;
 
 public class PasswordFieldModule extends AbstractFXSettingsModule<String>
 {
@@ -30,9 +30,7 @@ public class PasswordFieldModule extends AbstractFXSettingsModule<String>
         setting.addListener((e, oldValue, newVal) -> {
             textField.setText(newVal);
         });
-        Label fieldLabel = new Label(getFieldName());
-        content.getChildren().addAll(fieldLabel, textField);
-        GridPane.setConstraints(fieldLabel, 0, 0);
+        content.getChildren().add(textField);
         GridPane.setConstraints(textField, 1, 0);
 
         hasChanges = Bindings.createBooleanBinding(() -> !Objects.equals(textField.textProperty().get(), setting.getValue()), textField.textProperty(), setting);

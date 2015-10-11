@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -51,9 +52,13 @@ public abstract class AbstractFXSettingsModule<T> implements FXSettingsModule
         GridPane.setMargin(content, new Insets(10));
         content.setMaxWidth(Double.MAX_VALUE);
         content.setMaxHeight(Double.MAX_VALUE);
-        ColumnConstraints column1 = new ColumnConstraints(100, 150, 150);
-        ColumnConstraints column2 = new ColumnConstraints(150, 150, Double.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT, true);
+        ColumnConstraints column1 = new ColumnConstraints(200, 250, 250);
+        ColumnConstraints column2 = new ColumnConstraints(200, 200, Double.MAX_VALUE, Priority.SOMETIMES, HPos.LEFT, true);
         content.getColumnConstraints().addAll(column1, column2);
+        Label fieldLabel = new Label(getFieldName());
+        fieldLabel.setWrapText(true);
+        GridPane.setConstraints(fieldLabel, 0, 0);
+        content.getChildren().add(fieldLabel);
     }
 
     @Override
