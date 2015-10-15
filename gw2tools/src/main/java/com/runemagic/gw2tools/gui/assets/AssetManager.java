@@ -23,6 +23,7 @@ import javafx.scene.image.Image;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.internal.LinkedTreeMap;
 import com.runemagic.gw2tools.GW2Tools;
@@ -64,8 +65,8 @@ public class AssetManager
 				Map<String, String> assets = new HashMap<>();
 				GW2APISource src = GW2API.inst().getSource();
 
-				String data = src.readAPIv2Resource("files?ids=all");
-				JsonArray jsonArr = (JsonArray) jsonParser.parse(data);
+				JsonElement data = src.readAPIv2Resource("files?ids=all");
+				JsonArray jsonArr = (JsonArray) data;
 				ArrayList assetList = gson.fromJson(jsonArr, ArrayList.class);
 
 				for (Object loop : assetList)

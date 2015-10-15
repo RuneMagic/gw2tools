@@ -11,8 +11,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import org.json.JSONObject;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.runemagic.gw2tools.api.AbstractAPIObject;
 import com.runemagic.gw2tools.api.GW2APIField;
 import com.runemagic.gw2tools.api.GW2APISource;
@@ -42,7 +42,7 @@ public class GW2Item extends AbstractAPIObject
 	@GW2APIField(name = "vendor_value")
 	private IntegerProperty vendorValue=new SimpleIntegerProperty();
 
-	@GW2APIField(name = "default_skin")
+	@GW2APIField(name = "default_skin", optional = true)
 	private IntegerProperty defaultSkin=new SimpleIntegerProperty();
 
 	private ListProperty flags=new SimpleListProperty();
@@ -69,20 +69,21 @@ public class GW2Item extends AbstractAPIObject
 		addAPIv2Resource(() -> API_RESOURCE_PRICES + "/" + id.get(), this::updateTP);
 	}
 
-	private void updateGeneral(String data)
+	private void updateGeneral(JsonElement data)
 	{
 
 	}
 
-	private void updateTP(String data)
+	private void updateTP(JsonElement data)
 	{
-		JSONObject json=new JSONObject(data);
-		JSONObject buys=json.getJSONObject("buys");
-		buyQuantity.set(buys.getInt("quantity"));
-		buyUnitPrice.set(buys.getInt("unit_price"));
-		JSONObject sells=json.getJSONObject("sells");
-		sellQuantity.set(sells.getInt("quantity"));
-		sellUnitPrice.set(sells.getInt("unit_price"));
+		if (!data.isJsonObject()) throw new IllegalArgumentException(); //TODO proper exception
+		JsonObject json=(JsonObject)data;
+		JsonObject buys=json.getAsJsonObject("buys");
+		buyQuantity.set(buys.get("quantity").getAsInt());
+		buyUnitPrice.set(buys.get("unit_price").getAsInt());
+		JsonObject sells=json.getAsJsonObject("sells");
+		sellQuantity.set(sells.get("quantity").getAsInt());
+		sellUnitPrice.set(sells.get("unit_price").getAsInt());
 	}
 
 	public int getId()

@@ -15,8 +15,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 
-import org.json.JSONArray;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 import com.runemagic.gw2tools.api.GW2APIField;
@@ -72,14 +72,14 @@ public class GW2Account extends AuthenticatedAPIObject
 		addAPIv2Resource(API_RESOURCE_CHARACTERS, this, this::updateCharacters);
 	}
 
-	private void updateCharacters(String data)
+	private void updateCharacters(JsonElement data)
 	{
+		if (!data.isJsonArray()) throw new IllegalArgumentException(); //TODO proper exception
+		JsonArray json=(JsonArray)data;
 		List<String> charNames=new ArrayList<>();
-		JSONArray json = new JSONArray(data);
-		int len=json.length();
-		for (int i=0;i<len;i++)
+		for (JsonElement loop:json)
 		{
-			charNames.add(json.getString(i));
+			charNames.add(loop.getAsString());
 		}
 
 		Iterator<GW2Character> iter=characters.iterator();

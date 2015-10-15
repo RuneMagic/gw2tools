@@ -16,9 +16,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
 import com.runemagic.gw2tools.api.GW2API;
@@ -88,26 +88,28 @@ public class GW2Character extends AuthenticatedAPIObject
 		return name.get().replaceAll(" ", "%20");//TODO proper encoding
 	}
 
-	private void updateCharacter(String data)
+	private void updateCharacter(JsonElement data)
 	{
-		JSONObject json=new JSONObject(data);
+		if (!data.isJsonObject()) throw new IllegalArgumentException(); //TODO proper exception
+		JsonObject json=(JsonObject)data;
 		//TODO crafting
-		JSONObject specs=json.optJSONObject("specializations");
-		if (specs!=null)
+		if (json.has("specializations"))
 		{
-			updateBuild(getBuildPVE(), json.optJSONArray("pve"));
-			updateBuild(getBuildPVP(), json.optJSONArray("pvp"));
-			updateBuild(getBuildWVW(), json.optJSONArray("wvw"));
+			JsonObject specs = json.getAsJsonObject("specializations");
+			if (specs.has("pve")) updateBuild(getBuildPVE(), specs.get("pve"));
+			if (specs.has("pvp")) updateBuild(getBuildPVP(), specs.get("pvp"));
+			if (specs.has("wvw")) updateBuild(getBuildWVW(), specs.get("wvw"));
 		}
 	}
 
-	private void updateBuild(CharacterBuild build, JSONArray json)
+	private void updateBuild(CharacterBuild build, JsonElement data)
 	{
-		if (json!=null)
+		if (data!=null && !data.isJsonNull())
 		{
-			updateSpecializationSlot(build.getSpec1(), json.getJSONObject(0));
-			updateSpecializationSlot(build.getSpec2(), json.getJSONObject(1));
-			updateSpecializationSlot(build.getSpec3(), json.getJSONObject(2));
+			JsonArray json=(JsonArray) data;
+			updateSpecializationSlot(build.getSpec1(), json.get(0));
+			updateSpecializationSlot(build.getSpec2(), json.get(1));
+			updateSpecializationSlot(build.getSpec3(), json.get(2));
 		}
 		else
 		{
@@ -117,15 +119,16 @@ public class GW2Character extends AuthenticatedAPIObject
 		}
 	}
 
-	private void updateSpecializationSlot(SpecializationSlot spec, JSONObject json)
+	private void updateSpecializationSlot(SpecializationSlot spec, JsonElement data)
 	{
-		if (json!=null)
+		if (data!=null && !data.isJsonNull())
 		{
-			spec.setId(json.getInt("id"));
-			JSONArray traitsArray = json.getJSONArray("traits");
-			spec.setTrait1(GW2API.inst().getTrait(traitsArray.getInt(0)));
-			spec.setTrait2(GW2API.inst().getTrait(traitsArray.getInt(1)));
-			spec.setTrait3(GW2API.inst().getTrait(traitsArray.getInt(2)));
+			JsonObject json=(JsonObject) data;
+			spec.setId(json.get("id").getAsInt());
+			JsonArray traitsArray = json.getAsJsonArray("traits");
+			spec.setTrait1(getTrait(traitsArray.get(0)));
+			spec.setTrait2(getTrait(traitsArray.get(1)));
+			spec.setTrait3(getTrait(traitsArray.get(2)));
 		}
 		else
 		{
@@ -134,6 +137,12 @@ public class GW2Character extends AuthenticatedAPIObject
 			spec.setTrait2(null);
 			spec.setTrait3(null);
 		}
+	}
+
+	private CharacterTrait getTrait(JsonElement data)
+	{
+		if (data==null || data.isJsonNull()) return null;
+		return GW2API.inst().getTrait(data.getAsInt());
 	}
 
 	public String getName()

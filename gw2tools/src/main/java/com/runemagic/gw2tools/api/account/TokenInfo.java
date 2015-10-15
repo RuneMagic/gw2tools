@@ -17,18 +17,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.runemagic.gw2tools.api.APIKey;
 import com.runemagic.gw2tools.api.AuthenticatedAPIObject;
+import com.runemagic.gw2tools.api.GW2APIField;
 import com.runemagic.gw2tools.api.GW2APISource;
 
 public class TokenInfo extends AuthenticatedAPIObject
 {
 	private final static String API_RESOURCE_TOKENINFO="tokeninfo";
 
+	@GW2APIField(name = "id")
 	private StringProperty id=new SimpleStringProperty();
+
+	@GW2APIField(name = "name")
 	private StringProperty name=new SimpleStringProperty();
 	private SetProperty<GW2APIPermission> permissions=new SimpleSetProperty<>(FXCollections.observableSet(new HashSet<>()));
 	private Map<GW2APIPermission, BooleanProperty> permissionMap=new HashMap<>();
@@ -52,17 +56,15 @@ public class TokenInfo extends AuthenticatedAPIObject
 		addAPIv2Resource(API_RESOURCE_TOKENINFO, this, this::updateTokenInfo);
 	}
 
-	private void updateTokenInfo(String data)
+	private void updateTokenInfo(JsonElement data)
 	{
-		JSONObject json=new JSONObject(data);
-		id.set(json.getString("id"));
-		name.set(json.getString("name"));
-		JSONArray perms=json.getJSONArray("permissions");
+		if (!data.isJsonObject()) throw new IllegalArgumentException(); //TODO proper exception
+		JsonObject json=(JsonObject)data;
+		JsonArray perms=json.getAsJsonArray("permissions");
 		permissions.clear();
-		int len=perms.length();
-		for (int i=0;i<len;i++)
+		for (JsonElement loop:perms)
 		{
-			String permName=perms.getString(i);
+			String permName=loop.getAsString();
 			GW2APIPermission perm=GW2APIPermission.byName(permName);
 			if (perm==null) continue; //TODO //throw new GW2APIException("Unknown permission: "+permName);
 			permissions.add(perm);

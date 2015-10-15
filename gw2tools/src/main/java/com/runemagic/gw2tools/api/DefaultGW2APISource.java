@@ -5,10 +5,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 public class DefaultGW2APISource implements GW2APISource
 {
 	private final static String API_URL_V1="https://api.guildwars2.com/v1";
 	private final static String API_URL_V2="https://api.guildwars2.com/v2";
+
+	private final JsonParser gson=new JsonParser();
 
 	public DefaultGW2APISource()
 	{
@@ -21,18 +26,18 @@ public class DefaultGW2APISource implements GW2APISource
 	}
 
 	@Override
-	public String readAPIv2Resource(String resource, APIKeyHolder keyHolder) throws GW2APIException
+	public JsonElement readAPIv2Resource(String resource, APIKeyHolder keyHolder) throws GW2APIException
 	{
 		return readAPIv2Resource(appendAccessToken(resource, keyHolder));
 	}
 
 	@Override
-	public String readAPIv2Resource(String resource) throws GW2APIException
+	public JsonElement readAPIv2Resource(String resource) throws GW2APIException
 	{
 		try
 		{
-			//TODO basic validation
-			return readUrl(API_URL_V2+"/"+resource);
+			String json=readUrl(API_URL_V2+"/"+resource);
+			return gson.parse(json);
 		}
 		catch (IOException e)
 		{
@@ -41,7 +46,7 @@ public class DefaultGW2APISource implements GW2APISource
 	}
 
 	@Override
-	public String readAPIv1Resource(String resource, String... parameters) throws GW2APIException
+	public JsonElement readAPIv1Resource(String resource, String... parameters) throws GW2APIException
 	{
 		try
 		{
@@ -61,7 +66,8 @@ public class DefaultGW2APISource implements GW2APISource
 				sb.append("=");
 				sb.append(parameters[i+1]);
 			}
-			return readUrl(sb.toString());
+			String json=readUrl(sb.toString());
+			return gson.parse(json);
 		}
 		catch (IOException e)
 		{
