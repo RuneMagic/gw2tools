@@ -3,6 +3,7 @@ package com.runemagic.gw2tools.api;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.runemagic.gw2tools.GW2Tools;
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.api.account.Guild;
 import com.runemagic.gw2tools.api.account.TokenInfo;
@@ -30,7 +31,10 @@ public class GW2API
 	public GW2API()
 	{
 		profiler=new GW2APIProfiler();
-		source=profiler.watchAPISource1(new GW2APISourceOptimizer(profiler.watchAPISource2(new DefaultGW2APISource())));
+		if (GW2Tools.inst().getAppSettings().sourceOptimizerEnabled.get())
+			source=profiler.watchAPISource1(new GW2APISourceOptimizer(profiler.watchAPISource2(new DefaultGW2APISource())));
+		else
+			source=profiler.watchAPISource1(new DefaultGW2APISource());
 	}
 
 	public GW2APIProfiler getProfiler()
