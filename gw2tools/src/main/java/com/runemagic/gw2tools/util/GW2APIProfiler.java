@@ -37,44 +37,71 @@ public class GW2APIProfiler
 		return src;
 	}
 
+	public boolean hasSource1()
+	{
+		return src1!=null;
+	}
+
+	public boolean hasSource2()
+	{
+		return src2!=null;
+	}
+
 	public String compileStatistics()
 	{
 		if (!enabled) return "Profiler disabled";
-
+		if (!hasSource1() && !hasSource2()) return "No API sources connected";
+		if (!hasSource1()) return "No Source 1 connected"; //TODO make this "smarter"
 		StringBuilder sb=new StringBuilder();//TODO consider using tokens...
 		sb.append("##### GW2 API Profiler Start #####\n");
 		sb.append("V2 API calls:\n");
 		sb.append(" - Count: ");
 		sb.append(getSource1APIv2Calls());
-		sb.append("->");
-		sb.append(getSource2APIv2Calls());
-		sb.append("(");
-		sb.append(getSource2APIv2Calls()-getSource1APIv2Calls());
-		sb.append(")\n");
+		if (hasSource2())
+		{
+			sb.append("->");
+			sb.append(getSource2APIv2Calls());
+			sb.append("(");
+			sb.append(getSource2APIv2Calls()-getSource1APIv2Calls());
+			sb.append(")");
+		}
+		sb.append("\n");
 		sb.append("V2 API Authenticated calls:\n");
 		sb.append(" - Count: ");
 		sb.append(getSource1APIv2AuthCalls());
-		sb.append("->");
-		sb.append(getSource2APIv2AuthCalls());
-		sb.append("(");
-		sb.append(getSource2APIv2AuthCalls()-getSource1APIv2AuthCalls());
-		sb.append(")\n");
+		if (hasSource2())
+		{
+			sb.append("->");
+			sb.append(getSource2APIv2AuthCalls());
+			sb.append("(");
+			sb.append(getSource2APIv2AuthCalls()-getSource1APIv2AuthCalls());
+			sb.append(")");
+		}
+		sb.append("\n");
 		sb.append("V1 API calls:\n");
 		sb.append(" - Count: ");
 		sb.append(getSource1APIv1Calls());
-		sb.append("->");
-		sb.append(getSource2APIv1Calls());
-		sb.append("(");
-		sb.append(getSource2APIv1Calls()-getSource1APIv1Calls());
-		sb.append(")\n");
+		if (hasSource2())
+		{
+			sb.append("->");
+			sb.append(getSource2APIv1Calls());
+			sb.append("(");
+			sb.append(getSource2APIv1Calls()-getSource1APIv1Calls());
+			sb.append(")");
+		}
+		sb.append("\n");
 		sb.append("Total calls:\n");
 		sb.append(" - Count: ");
 		sb.append(getSource1TotalCalls());
-		sb.append("->");
-		sb.append(getSource2TotalCalls());
-		sb.append("(");
-		sb.append(getSource2TotalCalls()-getSource1TotalCalls());
-		sb.append(")\n");
+		if (hasSource2())
+		{
+			sb.append("->");
+			sb.append(getSource2TotalCalls());
+			sb.append("(");
+			sb.append(getSource2TotalCalls()-getSource1TotalCalls());
+			sb.append(")");
+		}
+		sb.append("\n");
 		sb.append("##### GW2 API Profiler End #####");
 		return sb.toString();
 	}
