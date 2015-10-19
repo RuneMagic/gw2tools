@@ -26,7 +26,7 @@ public class GW2API
 
 	public GW2API()
 	{
-		source=new DefaultGW2APISource();
+		source=new GW2APISourceOptimizer(new DefaultGW2APISource());
 	}
 
 	public static GW2API inst()
