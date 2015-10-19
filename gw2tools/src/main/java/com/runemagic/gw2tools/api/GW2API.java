@@ -11,6 +11,7 @@ import com.runemagic.gw2tools.api.character.CharacterTrait;
 import com.runemagic.gw2tools.api.character.GW2Character;
 import com.runemagic.gw2tools.api.character.SpecializationInfo;
 import com.runemagic.gw2tools.api.items.GW2Item;
+import com.runemagic.gw2tools.util.GW2APIProfiler;
 
 public class GW2API
 {
@@ -24,9 +25,17 @@ public class GW2API
 
 	private final GW2APISource source;
 
+	private GW2APIProfiler profiler;
+
 	public GW2API()
 	{
-		source=new GW2APISourceOptimizer(new DefaultGW2APISource());
+		profiler=new GW2APIProfiler();
+		source=profiler.watchAPISource1(new GW2APISourceOptimizer(profiler.watchAPISource2(new DefaultGW2APISource())));
+	}
+
+	public GW2APIProfiler getProfiler()
+	{
+		return profiler;
 	}
 
 	public static GW2API inst()

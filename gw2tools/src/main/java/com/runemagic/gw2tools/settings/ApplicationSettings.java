@@ -18,6 +18,9 @@ public class ApplicationSettings extends AbstractFXSettingsSheet
     @FXSetting(type = Boolean.class, moduleType = FXModuleType.CHECK_BOX, category = "Advanced (don't change unless you know what you're doing)", displayName = "Don't use unofficial methods to validate the API key")
     public SimpleBooleanProperty noUnofficialValidation;
 
+    @FXSetting(type = Boolean.class, moduleType = FXModuleType.CHECK_BOX, category = "Advanced (don't change unless you know what you're doing)", displayName = "Enable profiler (requres restart)")
+    public SimpleBooleanProperty profilerEnabled;
+
     public ApplicationSettings()
     {
         super("application_settings", FXSettingsSerializerType.FX_PREFERENCES);

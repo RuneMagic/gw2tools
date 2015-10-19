@@ -11,6 +11,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import com.runemagic.gw2tools.GW2Tools;
+import com.runemagic.gw2tools.api.GW2API;
+import com.runemagic.gw2tools.util.GW2APIProfiler;
 
 public class AboutController
 {
@@ -53,7 +55,11 @@ public class AboutController
 
 	@FXML void onClickFaelar(MouseEvent event)
 	{
-
+		GW2APIProfiler prof=GW2API.inst().getProfiler();//TODO "official" way to print stats and debug
+		if (event.isControlDown() && prof.isEnabled())
+		{
+			prof.printStatistics();
+		}
 	}
 
 	@FXML void onMouseEnteredFaelar(MouseEvent event)
