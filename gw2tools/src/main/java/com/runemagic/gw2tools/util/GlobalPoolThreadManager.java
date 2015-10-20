@@ -44,12 +44,16 @@ public class GlobalPoolThreadManager implements ThreadManager
 	public void shutdown()
 	{
 		globalPool.shutdown();
+		globalScheduledPool.shutdown();
 	}
 
 	@Override
 	public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException
 	{
-		return globalPool.awaitTermination(timeout, unit);
+		long time=timeout/2;
+		boolean ret=globalPool.awaitTermination(time, unit);
+		ret&=globalScheduledPool.awaitTermination(timeout-time, unit);
+		return ret;
 	}
 
 }
