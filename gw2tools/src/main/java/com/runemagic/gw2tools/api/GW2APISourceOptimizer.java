@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import com.google.gson.JsonArray;
@@ -48,8 +50,7 @@ public class GW2APISourceOptimizer implements GW2APISource
 
 	private APICallBatch createAPICallBatch(String resource)
 	{
-		String base="https://api.guildwars2.com/v2/"+resource;
-		return new APICallBatch(base, base+"?ids=", (s) -> {
+		return new APICallBatch(resource, resource+"?ids=", (s) -> {
 			if (s.startsWith("/")) return new String[]{s.substring(1)};
 			else if (s.startsWith("?ids=")) return s.substring(5).split(",");
 			return null;
@@ -59,12 +60,12 @@ public class GW2APISourceOptimizer implements GW2APISource
 	private void startAPIBatchSchedulerThread()
 	{
 		ScheduledExecutorService exec=GW2Tools.inst().getThreadManager().getScheduledExecutor(API_BATCH_SCHEDULER_THREAD_POOL);
-		exec.schedule(()->{
-			for (APICallBatch batch:batches)
+		exec.scheduleWithFixedDelay(() -> {
+			for (APICallBatch batch : batches)
 			{
 				batch.onTick();
 			}
-		}, SCHEDULE_INTERVAL, TimeUnit.MILLISECONDS);
+		}, SCHEDULE_INTERVAL, SCHEDULE_INTERVAL, TimeUnit.MILLISECONDS);
 	}
 
 	private APICallBatch getBatchFor(String request)
@@ -221,7 +222,7 @@ public class GW2APISourceOptimizer implements GW2APISource
 		private final String batchBase;
 		private final Function<String, String[]> idExtractor;
 
-		private final Object lock=new Object();
+		private final Lock lock = new ReentrantLock();
 
 		private final List<APIResourceRequest> requests=new LinkedList<>();
 		private final Set<String> ids=new HashSet<>();
@@ -251,7 +252,9 @@ public class GW2APISourceOptimizer implements GW2APISource
 			lastProcessTime=System.currentTimeMillis();
 			List<String> ids;
 			List<APIResourceRequest> requests;
-			synchronized(lock)
+
+			lock.lock();
+			try
 			{
 				if (this.requests.isEmpty()) return;
 				if (this.ids.isEmpty()) throw new IllegalStateException("Requests without IDs");
@@ -259,6 +262,10 @@ public class GW2APISourceOptimizer implements GW2APISource
 				ids=new ArrayList<>(this.ids);
 				this.requests.clear();
 				this.ids.clear();
+			}
+			finally
+			{
+				lock.unlock();
 			}
 
 			ExecutorService exec=GW2Tools.inst().getThreadManager().getExecutor(API_BATCH_RESOURCE_THREAD_POOL);
@@ -305,20 +312,30 @@ public class GW2APISourceOptimizer implements GW2APISource
 				throw new GW2APIException("Failed to parse the IDs: "+req.getRequest());
 			}
 			req.setIDs(extractedIDs);
-			synchronized(lock)
+			lock.lock();
+			try
 			{
 				Collections.addAll(ids, extractedIDs);
 				requests.add(req);
 				if (ids.size()>=maxBatchSize) process();
 			}
+			finally
+			{
+				lock.unlock();
+			}
 		}
 
 		public void onTick()
 		{
-			synchronized(lock)
+			lock.lock();
+			try
 			{
 				if (requests.isEmpty()) return;
 				if (System.currentTimeMillis()-lastProcessTime>SCHEDULE_INTERVAL) process();
+			}
+			finally
+			{
+				lock.unlock();
 			}
 		}
 	}

@@ -31,10 +31,10 @@ public class GW2API
 	public GW2API()
 	{
 		profiler=new GW2APIProfiler();
-		if (GW2Tools.inst().getAppSettings().sourceOptimizerEnabled.get())
-			source=profiler.watchAPISource1(new GW2APISourceOptimizer(profiler.watchAPISource2(new DefaultGW2APISource())));
-		else
+		if (GW2Tools.inst().getAppSettings().sourceOptimizerDisabled.get())
 			source=profiler.watchAPISource1(new DefaultGW2APISource());
+		else
+			source=profiler.watchAPISource1(new GW2APISourceOptimizer(profiler.watchAPISource2(new DefaultGW2APISource())));
 	}
 
 	public GW2APIProfiler getProfiler()

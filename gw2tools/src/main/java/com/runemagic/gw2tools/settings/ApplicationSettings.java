@@ -21,8 +21,8 @@ public class ApplicationSettings extends AbstractFXSettingsSheet
     @FXSetting(type = Boolean.class, moduleType = FXModuleType.CHECK_BOX, category = "Advanced (don't change unless you know what you're doing)", displayName = "Enable profiler (requres restart)")
     public SimpleBooleanProperty profilerEnabled;
 
-    @FXSetting(type = Boolean.class, moduleType = FXModuleType.CHECK_BOX, category = "Advanced (don't change unless you know what you're doing)", displayName = "Enable API source optimizer (requres restart)")
-    public SimpleBooleanProperty sourceOptimizerEnabled;
+    @FXSetting(type = Boolean.class, moduleType = FXModuleType.CHECK_BOX, category = "Advanced (don't change unless you know what you're doing)", displayName = "Disable API source optimizer (requres restart)")
+    public SimpleBooleanProperty sourceOptimizerDisabled;
 
     public ApplicationSettings()
     {
