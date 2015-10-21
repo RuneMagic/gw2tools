@@ -15,12 +15,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.runemagic.gw2tools.GW2Tools;
 
 public class GW2APISourceOptimizer implements GW2APISource
 {
+	private static final Logger log = LoggerFactory.getLogger(GW2APISourceOptimizer.class);
+
+
 	private static final String API_BATCH_RESOURCE_THREAD_POOL="GW2APIBatchResource";
 	private static final String API_BATCH_SCHEDULER_THREAD_POOL="GW2APIBatchScheduler";
 
@@ -41,16 +48,16 @@ public class GW2APISourceOptimizer implements GW2APISource
 
 	private void loadCallBatches()
 	{
-		batches.add(createAPICallBatch("items"));
-		batches.add(createAPICallBatch("commerce/prices"));
-		batches.add(createAPICallBatch("traits"));
-		batches.add(createAPICallBatch("specializations"));
-		batches.add(createAPICallBatch("skins"));
+		batches.add(createAPICallBatch("items", "id"));
+		batches.add(createAPICallBatch("commerce/prices", "id"));
+		batches.add(createAPICallBatch("traits", "id"));
+		batches.add(createAPICallBatch("specializations", "id"));
+		batches.add(createAPICallBatch("skins", "id"));
 	}
 
-	private APICallBatch createAPICallBatch(String resource)
+	private APICallBatch createAPICallBatch(String resource, String idField)
 	{
-		return new APICallBatch(resource, resource+"?ids=", (s) -> {
+		return new APICallBatch(resource, resource+"?ids=", idField, (s) -> {
 			if (s.startsWith("/")) return new String[]{s.substring(1)};
 			else if (s.startsWith("?ids=")) return s.substring(5).split(",");
 			return null;
@@ -140,6 +147,7 @@ public class GW2APISourceOptimizer implements GW2APISource
 		private GW2APIException exception=null;
 		private volatile boolean hasResult=false;
 		private String[] ids;
+		//TODO optional flag
 
 		public APIResourceRequest(String request)
 		{
@@ -220,6 +228,7 @@ public class GW2APISourceOptimizer implements GW2APISource
 	{
 		private final String pattern;
 		private final String batchBase;
+		private final String idField;
 		private final Function<String, String[]> idExtractor;
 
 		private final Lock lock = new ReentrantLock();
@@ -229,11 +238,12 @@ public class GW2APISourceOptimizer implements GW2APISource
 
 		private volatile long lastProcessTime=0;
 
-		public APICallBatch(String pattern, String batchBase, Function<String, String[]> idExtractor)
+		public APICallBatch(String pattern, String batchBase, String idField, Function<String, String[]> idExtractor)
 		{
 			this.pattern=pattern;
 			this.batchBase=batchBase;
 			this.idExtractor=idExtractor;
+			this.idField=idField;
 		}
 
 		public boolean matches(String request)
@@ -272,15 +282,22 @@ public class GW2APISourceOptimizer implements GW2APISource
 			exec.submit(() -> {
 				try
 				{
-					JsonElement res=src.readAPIv2Resource(build(ids));
+					String reqStr=build(ids);
+					JsonElement res=src.readAPIv2Resource(reqStr);
 					if (!res.isJsonArray()) throw new GW2APIException("The requested resource is not an array");//TODO this should be a runtime exception
 					JsonArray arr = (JsonArray)res;
-					if (arr.size()!=ids.size()) throw new GW2APIException("ID and result array size mismatch");
+					//boolean hasNullResults=arr.size()!=ids.size();//TODO use this for optional checking
+					//if (idField==null && hasNullResults) throw new GW2APIException("ID and result array size mismatch ("+ids.size()+"!="+arr.size()+") request: "+reqStr);
 					Map<String,JsonElement> results=new HashMap<>();
 					int n=0;
 					for (JsonElement loop:arr)
 					{
-						results.put(ids.get(n), loop);
+						if (!loop.isJsonObject()) throw new GW2APIException("Non-object results (request: "+reqStr+")");//TODO this should be a runtime exception
+						JsonObject obj=(JsonObject) loop;
+						if (!obj.has(idField)) throw new GW2APIException("Result doesn't have id field (request: "+reqStr+")");
+						String id=obj.get(idField).getAsString();
+						if (results.containsKey(id)) log.warn("Duplicate results (request: "+reqStr+")");
+						results.put(id, loop);
 						n++;
 					}
 					//TODO handle "ids=all"
