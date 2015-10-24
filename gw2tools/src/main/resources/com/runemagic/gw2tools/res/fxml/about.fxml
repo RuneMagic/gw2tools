@@ -1,53 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.control.*?>
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.runemagic.gw2tools.gui.controller.AboutController">
-   <children>
-      <Label fx:id="lblTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="226.0" layoutY="14.0" prefHeight="33.0" prefWidth="149.0" text="About GW2Tools" textAlignment="CENTER" AnchorPane.leftAnchor="226.0" AnchorPane.rightAnchor="225.0">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <ImageView fx:id="imgRuneMagic" fitHeight="60.0" fitWidth="380.0" layoutX="150.0" layoutY="312.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0">
-         <image>
-            <Image url="/com/runemagic/gw2tools/res/images/about/rmbanner_invert.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="imgFaelar" layoutX="91.0" layoutY="170.0" onMouseClicked="#onClickFaelar" onMouseEntered="#onMouseEnteredFaelar" onMouseExited="#onMouseExitedFaelar" AnchorPane.leftAnchor="91.0">
-         <image>
-            <Image url="/com/runemagic/gw2tools/res/images/about/faelar_invert.png" />
-         </image>
-      </ImageView>
-      <Text fill="WHITE" layoutX="42.0" layoutY="294.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GW2Tools is brought to you by these fine dinos/mammoths/strong AI from the RuneMagic Network" textAlignment="CENTER" wrappingWidth="600.0" />
-      <Hyperlink fx:id="linkDiscord" alignment="CENTER" contentDisplay="CENTER" layoutX="524.0" layoutY="75.0" text="Discord" AnchorPane.rightAnchor="83.0">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Hyperlink>
-      <ImageView fx:id="imgCodered" layoutX="530.0" layoutY="170.0" onMouseClicked="#onMouseClickedCodered" onMouseEntered="#onMouseEnteredCodered" onMouseExited="#onMouseExitedCodered" AnchorPane.rightAnchor="90.0">
-         <image>
-            <Image url="/com/runemagic/gw2tools/res/images/about/code_invert.png" />
-         </image>
-      </ImageView>
-      <ImageView fx:id="imgPatosaur" layoutX="310.0" layoutY="170.0" onMouseClicked="#onClickPatosaur" onMouseEntered="#onMouseEnteredPatosaur" onMouseExited="#onMouseExitedPatosaur" AnchorPane.leftAnchor="310.0" AnchorPane.rightAnchor="310.0">
-         <image>
-            <Image url="/com/runemagic/gw2tools/res/images/about/pat_invert.png" />
-         </image>
-      </ImageView>
-      <Hyperlink fx:id="linkGitHub" alignment="CENTER" contentDisplay="CENTER" layoutX="86.0" layoutY="75.0" text="GitHub" AnchorPane.leftAnchor="86.0">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Hyperlink>
-      <Hyperlink fx:id="linkVersion" alignment="CENTER" contentDisplay="CENTER" layoutX="276.0" layoutY="75.0" onAction="#onClickVersion" prefHeight="35.0" prefWidth="130.0" text="Version - 0.0.0" AnchorPane.leftAnchor="275.0" AnchorPane.rightAnchor="275.0">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Hyperlink>
-   </children>
+	<Label fx:id="lblTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="226.0" layoutY="14.0" prefHeight="33.0" prefWidth="149.0" text="About GW2Tools" textAlignment="CENTER" AnchorPane.leftAnchor="226.0" AnchorPane.rightAnchor="225.0">
+		<font>
+			<Font size="24.0"/>
+		</font>
+	</Label>
+	<ImageView fx:id="imgRuneMagic" fitHeight="60.0" fitWidth="380.0" layoutX="150.0" layoutY="312.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0">
+		<Image url="/com/runemagic/gw2tools/res/images/about/rmbanner_invert.png"/>
+	</ImageView>
+	<ImageView fx:id="imgFaelar" layoutX="91.0" layoutY="170.0" onMouseClicked="#onClickFaelar" onMouseEntered="#onMouseEnteredFaelar" onMouseExited="#onMouseExitedFaelar" AnchorPane.leftAnchor="91.0">
+		<Image url="/com/runemagic/gw2tools/res/images/about/faelar_invert.png"/>
+	</ImageView>
+	<Text fill="WHITE" layoutX="42.0" layoutY="294.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GW2Tools is brought to you by these fine dinos/mammoths/strong AI from the RuneMagic Network" textAlignment="CENTER" wrappingWidth="600.0"/>
+	<Hyperlink fx:id="linkDiscord" alignment="CENTER" contentDisplay="CENTER" layoutX="524.0" layoutY="75.0" text="Discord" AnchorPane.rightAnchor="83.0">
+		<font>
+			<Font size="18.0"/>
+		</font>
+	</Hyperlink>
+	<ImageView fx:id="imgCodered" layoutX="530.0" layoutY="170.0" onMouseClicked="#onMouseClickedCodered" onMouseEntered="#onMouseEnteredCodered" onMouseExited="#onMouseExitedCodered" AnchorPane.rightAnchor="90.0">
+		<Image url="/com/runemagic/gw2tools/res/images/about/code_invert.png"/>
+	</ImageView>
+	<ImageView fx:id="imgPatosaur" layoutX="310.0" layoutY="170.0" onMouseClicked="#onClickPatosaur" onMouseEntered="#onMouseEnteredPatosaur" onMouseExited="#onMouseExitedPatosaur" AnchorPane.leftAnchor="310.0" AnchorPane.rightAnchor="310.0">
+		<Image url="/com/runemagic/gw2tools/res/images/about/pat_invert.png"/>
+	</ImageView>
+	<Hyperlink fx:id="linkGitHub" alignment="CENTER" contentDisplay="CENTER" layoutX="86.0" layoutY="75.0" text="GitHub" AnchorPane.leftAnchor="86.0">
+		<font>
+			<Font size="18.0"/>
+		</font>
+	</Hyperlink>
+	<Hyperlink fx:id="linkVersion" alignment="CENTER" contentDisplay="CENTER" layoutX="276.0" layoutY="75.0" onAction="#onClickVersion" prefHeight="35.0" prefWidth="130.0" text="Version - 0.0.0" AnchorPane.leftAnchor="275.0" AnchorPane.rightAnchor="275.0">
+		<font>
+			<Font size="18.0"/>
+		</font>
+	</Hyperlink>
 </AnchorPane>
