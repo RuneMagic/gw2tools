@@ -4,11 +4,11 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import com.runemagic.gw2tools.gui.components.CharacterList?>
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.runemagic.gw2tools.gui.controller.CharactersController">
-   <center>
-      <CharacterList fx:id="tblCharacters" BorderPane.alignment="CENTER">
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </CharacterList>
-   </center>
+	<center>
+		<CharacterList fx:id="tblCharacters" BorderPane.alignment="CENTER">
+			<padding>
+				<Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+			</padding>
+		</CharacterList>
+	</center>
 </BorderPane>
