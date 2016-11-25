@@ -19,7 +19,7 @@ import com.runemagic.gw2tools.api.items.GW2Item;
 import com.runemagic.gw2tools.api.items.MaterialPair;
 import com.runemagic.gw2tools.util.StringTools;
 
-public class MaterialProcessingCalculator
+public class RecipeCalculator
 {
 	private static final float TP_MULT=0.85f;
 
@@ -34,7 +34,7 @@ public class MaterialProcessingCalculator
 	private StringProperty resultValueStr=new SimpleStringProperty();
 	private StringProperty resultText=new SimpleStringProperty();
 
-	public MaterialProcessingCalculator()
+	public RecipeCalculator()
 	{
 		loadMaterialPairs();
 

@@ -10,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import com.runemagic.gw2tools.api.items.MaterialPair;
-import com.runemagic.gw2tools.commerce.MaterialProcessingCalculator;
+import com.runemagic.gw2tools.commerce.RecipeCalculator;
 import com.runemagic.gw2tools.commerce.TPAction;
 
 public class CommerceController
@@ -46,7 +46,7 @@ public class CommerceController
 	@FXML
 	private CheckBox chkProcessedBuy;
 
-	private MaterialProcessingCalculator calc=new MaterialProcessingCalculator();
+	private RecipeCalculator calc=new RecipeCalculator();
 
 	public void initialize()
 	{

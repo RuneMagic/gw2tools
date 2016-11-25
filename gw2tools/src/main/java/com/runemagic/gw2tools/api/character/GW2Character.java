@@ -1,9 +1,11 @@
 package com.runemagic.gw2tools.api.character;
 
 import java.time.Instant;
+import java.util.List;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ListProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
@@ -11,10 +13,12 @@ import javafx.beans.property.ReadOnlyLongProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -64,7 +68,8 @@ public class GW2Character extends AuthenticatedAPIObject
 	private ObjectProperty<CharacterBuild> buildPVP=new SimpleObjectProperty<>();
 	private ObjectProperty<CharacterBuild> buildWVW=new SimpleObjectProperty<>();
 	private ObjectProperty<CharacterEquipment> equipment=new SimpleObjectProperty<>();
-	//TODO inventory
+
+	private ListProperty<InventoryBag> bags=new SimpleListProperty<>(FXCollections.observableArrayList());
 
 	public GW2Character(GW2APISource source, String name, APIKey apiKey)
 	{
@@ -99,6 +104,41 @@ public class GW2Character extends AuthenticatedAPIObject
 			if (specs.has("pve")) updateBuild(getBuildPVE(), specs.get("pve"));
 			if (specs.has("pvp")) updateBuild(getBuildPVP(), specs.get("pvp"));
 			if (specs.has("wvw")) updateBuild(getBuildWVW(), specs.get("wvw"));
+		}
+
+		bags.clear();//TODO update instead of clear
+		JsonArray bagsJson=json.getAsJsonArray("bags");
+		for (JsonElement loop:bagsJson)
+		{
+			InventoryBag bag;
+			if (loop.isJsonNull()) bag=null;
+			else
+			{
+				JsonObject bagJson=(JsonObject)loop;
+				bag=new InventoryBag(bagJson.get("id").getAsInt(), bagJson.get("size").getAsInt());
+				updateBag(bag, bagJson.getAsJsonArray("inventory"));
+			}
+			bags.add(bag);
+		}
+	}
+
+	private void updateBag(InventoryBag bag, JsonArray data)
+	{
+		if (bag==null) return;
+		Inventory inv=bag.getInventory();
+		List<InventoryItem> items=inv.getItems();
+		int n=0;
+		for (JsonElement loop:data)
+		{
+			InventoryItem item;
+			if (loop.isJsonNull()) item=null;
+			else
+			{
+				JsonObject itemJson=(JsonObject)loop;
+				item=new InventoryItem(itemJson.get("id").getAsInt(), itemJson.get("count").getAsInt());
+			}
+			items.set(n, item);
+			n++;
 		}
 	}
 
