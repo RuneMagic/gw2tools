@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/gw2tools.iml" filepath="$PROJECT_DIR$/gw2tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gw2tools.iml" filepath="$PROJECT_DIR$/.idea/modules/gw2tools.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gw2tools_main.iml" filepath="$PROJECT_DIR$/.idea/modules/gw2tools_main.iml" group="gw2tools" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gw2tools_test.iml" filepath="$PROJECT_DIR$/.idea/modules/gw2tools_test.iml" group="gw2tools" />
     </modules>
   </component>
 </project>

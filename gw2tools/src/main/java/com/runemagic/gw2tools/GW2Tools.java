@@ -28,6 +28,8 @@ import com.faelar.util.javafx.JFXTools;
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.gui.ApplicationManager;
 import com.runemagic.gw2tools.gui.assets.AssetManager;
+import com.runemagic.gw2tools.raid.GoogleSheetsMemberLoader;
+import com.runemagic.gw2tools.raid.RaidManager;
 import com.runemagic.gw2tools.reference.Reference;
 import com.runemagic.gw2tools.settings.ApplicationSettings;
 import com.runemagic.gw2tools.util.GlobalPoolThreadManager;
@@ -55,6 +57,7 @@ public class GW2Tools extends Application
 	private ThreadManager threads;
 	private FXSettingsManager settings;
 	private ApplicationManager app;
+	private RaidManager raid;
 
 	private ApplicationSettings appSettings;
 	private FXSettingsSheetPane appSettingsSheet;
@@ -68,11 +71,16 @@ public class GW2Tools extends Application
 		res=new ResourceManager("com/runemagic/gw2tools/res/", "res");
 		threads=new GlobalPoolThreadManager();
 		assets = new AssetManager();
-
+		raid=new RaidManager(new GoogleSheetsMemberLoader());
 		settings = new FXSettingsManager();
 		settings.registerSerializer(FXSettingsSerializerType.FX_PREFERENCES, new PreferencesFXSettingsSerializer());
 
-		setLogLevel(Level.INFO);//TODO configurable
+		setLogLevel(Level.DEBUG);//TODO configurable
+	}
+
+	public RaidManager getRaidManager()
+	{
+		return raid;
 	}
 
 	private void setLogLevel(ch.qos.logback.classic.Level level)
@@ -253,6 +261,7 @@ public class GW2Tools extends Application
 		app.addView("Account", loadFXML("account.fxml"), Icons.createIconLabel(FontIcon.USER, 30), true);
 		app.addView("Characters", loadFXML("characters.fxml"), Icons.createIconLabel(FontIcon.CHILD, 30), false);
 		app.addView("Inventory", loadFXML("inventory.fxml"), Icons.createIconLabel(FontIcon.LIST, 30), false);
+		app.addView("Raid", loadFXML("raid.fxml"), Icons.createIconLabel(FontIcon.USERS, 30), false);
 		app.addView("Commerce", loadFXML("commerce.fxml"), Icons.createIconLabel(FontIcon.CREDIT_CARD, 30), false);
 		app.addView("About", loadFXML("about.fxml"), Icons.createIconLabel(FontIcon.INFO_CIRCLE, 30), false);
 	}

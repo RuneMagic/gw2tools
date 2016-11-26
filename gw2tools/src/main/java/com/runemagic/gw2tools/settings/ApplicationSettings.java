@@ -24,6 +24,18 @@ public class ApplicationSettings extends AbstractFXSettingsSheet
     @FXSetting(type = Boolean.class, moduleType = FXModuleType.CHECK_BOX, category = "Advanced (don't change unless you know what you're doing)", displayName = "Disable API source optimizer (requres restart)")
     public SimpleBooleanProperty sourceOptimizerDisabled;
 
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Spreadsheet ID")
+    public SimpleStringProperty raidSpreadsheetID;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Names Range")
+    public SimpleStringProperty raidNamesRange;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Class Skill Range")
+    public SimpleStringProperty raidSkillRange;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Class Preferences Range")
+    public SimpleStringProperty raidPreferencesRange;
+
     public ApplicationSettings()
     {
         super("application_settings", FXSettingsSerializerType.FX_PREFERENCES);
