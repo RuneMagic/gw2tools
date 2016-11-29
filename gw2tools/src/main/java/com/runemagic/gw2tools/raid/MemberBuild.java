@@ -36,4 +36,9 @@ public class MemberBuild
 				", preference=" + preference +
 				'}';
 	}
+
+	public boolean hasRole(RaidRole role)
+	{
+		return build.hasRole(role);
+	}
 }

@@ -1,13 +1,13 @@
 package com.runemagic.gw2tools.raid;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableSet;
 
 public enum RaidBuild
 {
 	ELEMENTALIST_STAFF(RaidRole.POWER_DAMAGE, RaidRole.STAFF_ELEMENTALIST),
-	ELEMENTALIST_DAGGERWARHORN(RaidRole.POWER_DAMAGE, RaidRole.NONSTAFF_ELEMENTALIST),
+	ELEMENTALIST_DAGGERWARHORN(RaidRole.POWER_DAMAGE),
 	ENGINEER_POWER(RaidRole.POWER_DAMAGE),
 	ENGINEER_CONDITION_DAMAGE(RaidRole.CONDITION_DAMAGE),
 	GUARDIAN_HAMMER(RaidRole.POWER_DAMAGE, RaidRole.PROTECTION, RaidRole.HAMMER_DRAGONHUNTER),
@@ -31,7 +31,7 @@ public enum RaidBuild
 
 	private RaidBuild(RaidRole... roles)
 	{
-		this.roles = new HashSet<RaidRole>(Arrays.asList(roles));
+		this.roles = ImmutableSet.copyOf(roles);
 		this.power=this.roles.contains(RaidRole.CONDITION_DAMAGE);
 	}
 
@@ -48,5 +48,10 @@ public enum RaidBuild
 	public Set<RaidRole> getRoles()
 	{
 		return roles;
+	}
+
+	public boolean hasRole(RaidRole role)
+	{
+		return roles.contains(role);
 	}
 }

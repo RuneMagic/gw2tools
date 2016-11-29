@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import org.apache.commons.collections4.iterators.PermutationIterator;
 
@@ -45,7 +46,7 @@ public class CompositionBuilder
 		return ret;
 	}
 
-	public List<RaidComposition> getCompositions(BiPredicate<RaidRole, RaidMember> roleFilter)
+	public Set<RaidComposition> getCompositions(BiPredicate<RaidRole, RaidMember> roleFilter, Predicate<RaidComposition> compositionFilter)
 	{
 		Set<RaidComposition> result=new HashSet<>();
 		PermutationIterator<RaidMember> perm=new PermutationIterator<RaidMember>(raiders);
@@ -55,9 +56,9 @@ public class CompositionBuilder
 			if (!matchesBaseComposition(list, roleFilter)) continue;
 			//at this point we have a valid composition
 			RaidComposition comp=createComposition(list);
-			result.add(comp);
+			if (compositionFilter.test(comp)) result.add(comp);
 		}
-		return new ArrayList<>(result);
+		return result;
 	}
 
 	private RaidComposition createComposition(List<RaidMember> list)

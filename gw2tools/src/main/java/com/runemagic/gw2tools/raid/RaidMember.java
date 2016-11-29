@@ -54,6 +54,7 @@ public class RaidMember
 		int ret=0;
 		for (MemberBuild build:builds)
 		{
+			if (!build.hasRole(role)) continue;
 			int pref=build.getPreference();
 			if (pref>ret) ret=pref;
 		}
@@ -65,6 +66,7 @@ public class RaidMember
 		int ret=0;
 		for (MemberBuild build:builds)
 		{
+			if (!build.hasRole(role)) continue;
 			int skill=build.getSkill();
 			if (skill>ret) ret=skill;
 		}
