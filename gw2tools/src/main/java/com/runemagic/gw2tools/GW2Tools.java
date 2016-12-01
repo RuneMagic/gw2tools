@@ -160,6 +160,7 @@ public class GW2Tools extends Application
 			e.printStackTrace();
 		}
 		Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+			e.printStackTrace();
 			DialogTools.createExceptionDialog(e, "Unexpected Exception", "GW2Tools encountered an unexpected Exception", e.getMessage());
 			System.exit(-1);
 		});
