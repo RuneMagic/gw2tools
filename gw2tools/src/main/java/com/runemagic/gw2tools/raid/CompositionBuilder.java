@@ -71,7 +71,7 @@ public class CompositionBuilder
 			RaidMember member=list.get(i);
 			slots.add(new RaidSlot(role, member));
 		}
-		return new RaidComposition(slots);
+		return new RaidComposition(base, slots);
 	}
 
 	private boolean matchesBaseComposition(List<RaidMember> list, BiPredicate<RaidRole, RaidMember> roleFilter)
@@ -115,7 +115,7 @@ public class CompositionBuilder
 				availableRaiders.remove(member);
 				comp.add(new RaidSlot(slot.getRole(), member));
 			}
-			if (comp.size() == base.getRaidSize()) comps.add(new RaidComposition(comp));
+			if (comp.size() == base.getRaidSize()) comps.add(new RaidComposition(base, comp));
 		}
 		return comps;
 	}

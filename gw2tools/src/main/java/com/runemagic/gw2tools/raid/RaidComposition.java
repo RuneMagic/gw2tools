@@ -1,6 +1,9 @@
 package com.runemagic.gw2tools.raid;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
@@ -8,6 +11,7 @@ import com.google.common.collect.ImmutableSet;
 public class RaidComposition
 {
 	private final Set<RaidSlot> slots;
+	private final CompositionBase base;
 	private final int hashcode;
 	private Integer minimumSkill=null;
 	private Float averageSkill=null;
@@ -16,15 +20,38 @@ public class RaidComposition
 	//private Boolean perfectSkill=null;
 	//private Boolean perfectPreference=null;
 
-	public RaidComposition(Collection<RaidSlot> slots)
+	public RaidComposition(CompositionBase base, Collection<RaidSlot> slots)
 	{
 		this.slots=ImmutableSet.copyOf(slots);
+		this.base=base;
 		hashcode=this.slots.hashCode();
 	}
 
 	public Set<RaidSlot> getSlots()
 	{
 		return slots;
+	}
+
+	public RaidRole getRole(RaidMember member)
+	{
+		for (RaidSlot slot:slots)
+		{
+			if (slot.getMember().equals(member)) return slot.getRole();
+		}
+		return null;
+	}
+
+	public List<RaidSlot> getOrderedSlots()
+	{
+		RaidSlot[] ret=new RaidSlot[slots.size()];
+		List<RaidRole> roles=new ArrayList<>(base.getRoles());
+		for (RaidSlot slot:slots)
+		{
+			int n=roles.indexOf(slot.getRole());
+			ret[n]=slot;
+			roles.remove(n);
+		}
+		return Arrays.asList(ret);
 	}
 
 	/*public boolean getPerfectSkill()

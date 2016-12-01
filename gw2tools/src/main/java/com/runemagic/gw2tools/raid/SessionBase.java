@@ -11,11 +11,13 @@ public class SessionBase
 {
 	private final Map<RaidBoss, CompositionBase> comps;
 	private final List<RaidBoss> raidBosses;
+	private final List<RaidWing> raidWings;
 
 	public SessionBase(Map<RaidBoss, CompositionBase> comps, RaidWing... raidWings)
 	{
 		this.comps = ImmutableMap.copyOf(comps);
 		this.raidBosses = ImmutableList.copyOf(listBosses(raidWings));
+		this.raidWings = ImmutableList.copyOf(raidWings);
 		//TODO verify bosses
 	}
 
@@ -30,6 +32,11 @@ public class SessionBase
 			}
 		}
 		return ret;
+	}
+
+	public List<RaidWing> getRaidWings()
+	{
+		return raidWings;
 	}
 
 	public List<RaidBoss> getBosses()

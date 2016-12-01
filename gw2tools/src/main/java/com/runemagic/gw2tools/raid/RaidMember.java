@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RaidMember
+public class RaidMember implements Comparable<RaidMember>
 {
 	private final Set<RaidRole> roles;
 	private final Set<MemberBuild> builds;
@@ -94,5 +94,10 @@ public class RaidMember
 		return "RaidMember{" +
 				"name='" + name + '\'' +
 				'}';
+	}
+
+	@Override public int compareTo(RaidMember o)
+	{
+		return getName().compareTo(o.getName());
 	}
 }

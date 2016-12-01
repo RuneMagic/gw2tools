@@ -2,16 +2,20 @@ package com.runemagic.gw2tools.raid;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
 public class SessionBuilder
 {
+	private static final int MAX_SWAPS_BETWEEN_BOSSES=3;
+	private static final int MAX_SWAPS_BETWEEN_WINGS=3;
+
 	private final SessionBase base;
 	private final Set<RaidMember> members;
 
@@ -29,10 +33,43 @@ public class SessionBuilder
 				&& comp.getMinimumPreference()>2;
 	}
 
+	public List<RaidSession> getTopSessions()
+	{
+		List<RaidSession> sessions=buildSessions();
+		System.out.println("sessions="+sessions.size());
+		if (sessions.isEmpty()) return sessions;
+		Collections.sort(sessions, (s1,s2)->{
+			return Integer.compare(s1.getSwaps(),s2.getSwaps());
+		});
+		int lowestSwaps=sessions.get(0).getSwaps();
+		System.out.println("lowest swaps="+lowestSwaps);
+		int highestSwaps=sessions.get(3).getSwaps();
+		System.out.println("highest swaps="+highestSwaps);
+		List<RaidSession> tmp=new ArrayList<>();
+		for (RaidSession session:sessions)
+		{
+			if (session.getSwaps()<=highestSwaps) tmp.add(session);
+			else break;
+		}
+		Collections.sort(tmp, (s1,s2)->{
+			return Float.compare(s2.getAveragePreference(),s1.getAveragePreference());
+		});
+		float highestPref=sessions.get(0).getAveragePreference();
+		System.out.println("highest preference="+highestPref);
+		float lowestPref=sessions.get(3).getAveragePreference();
+		System.out.println("lowest preference="+lowestPref);
+		List<RaidSession> ret=new ArrayList<>();
+		for (RaidSession session:tmp)
+		{
+			if (session.getAveragePreference()>=lowestPref) ret.add(session);
+			else break;
+		}
+		return ret;
+	}
+
 	public List<RaidSession> buildSessions()
 	{
-		Set<RaidSession> sessions=new HashSet<>();
-		List<BossCompositionCandidates> comps=new LinkedList<>();
+		Map<RaidBoss, List<RaidComposition>> comps=new HashMap<>();
 		Iterator<RaidComposition> lastBossIter=null;
 		for (RaidBoss boss:base.getBosses())
 		{
@@ -64,131 +101,200 @@ public class SessionBuilder
 				}
 			}
 			System.out.println(boss+"="+result.size());
-			comps.add(new BossCompositionCandidates(boss, result));
+			comps.put(boss, result);
 		}
 
-		/*int minSize=Integer.MAX_VALUE;
-		RaidBoss minBoss;
-		for (BossCompositionCandidates comp:comps)
+		Map<RaidWing, List<RaidWingComposition>> allWingComps=new HashMap<>();
+		for (RaidWing wing:base.getRaidWings())
 		{
-			int size=comp.count();
-			if (size<minSize)
-			{
-				minSize=size;
-				minBoss=comp.getBoss();
-			}
-		}*/
+			List<RaidWingComposition> wingComps=getAllWingCompositions(wing, comps);
+			System.out.println(wing+"="+wingComps.size());
+			allWingComps.put(wing, wingComps);
+		}
 
-	/*	int maxAllowedSwaps=3;
-		BossCompositionCandidates lastCompCandidates=null;
-		Map<RaidBoss, RaidComposition> bossComps;
-		for (BossCompositionCandidates compCandidates:comps)
+		return getAllSessions(allWingComps);
+	}
+
+	private List<RaidSession> getAllSessions(Map<RaidWing, List<RaidWingComposition>> allComps)
+	{
+		List<RaidSession> ret=new LinkedList<>();
+		List<RaidWing> wings=base.getRaidWings();
+		int wingCount=wings.size();
+		int[] indexes=new int[wingCount];
+		int[] sizes=new int[wingCount];
+		List<RaidWingComposition>[] comps=new List[wingCount];
+		int i=0;
+		for (RaidWing wing:wings)
 		{
-			if (lastCompCandidates!=null)
+			indexes[i]=0;
+			sizes[i]=allComps.get(wing).size();
+			comps[i]=allComps.get(wing);
+			i++;
+		}
+		int n=0;
+		while (true)
+		{
+			Map<RaidBoss, RaidComposition> session=null;
+			RaidWingComposition lastComp=null;
+			int totalSwaps=0;
+			for (i=0;i<wingCount;i++)
 			{
-				for (RaidComposition comp2:lastCompCandidates.getComps())
+				RaidWingComposition comp=comps[i].get(indexes[i]);
+				if (lastComp!=null)
 				{
-
-					Iterator<RaidComposition> compIter=compCandidates.getComps().iterator();
-					while (compIter.hasNext())
+					Integer swaps=getSwapsBetween(lastComp, comp, MAX_SWAPS_BETWEEN_WINGS);
+					if (swaps==null)
 					{
-						RaidComposition comp=compIter.next();
-						if (comp.equals(comp2))
-						{
-							compIter.remove();
-							//bossComps
-							break;
-						}
-						int swaps = 0;
-						for (RaidSlot slot:comp.getSlots())
-						{
-							for (RaidSlot slot2:comp2.getSlots())
-							{
-								if (!slot.equals(slot2))
-								{
-									swaps++;
-									break;
-								}
-							}
-							//if (swaps>maxAllowedSwaps)
-						}
-
+						session=null;
+						break;
 					}
+					if (session==null)
+					{
+						session=new HashMap<>();
+						session.putAll(lastComp.getCompositions());
+						totalSwaps+=lastComp.getSwaps();
+					}
+					session.putAll(comp.getCompositions());
+					totalSwaps+=comp.getSwaps();
 				}
+				lastComp=comp;
 			}
-			lastCompCandidates=compCandidates;
-		}*/
+			if (session!=null) ret.add(new RaidSession(base, session, totalSwaps));
 
-		return new ArrayList<RaidSession>(sessions);
-	}
-
-	/*private List<RaidSession> findClosestCompChains(RaidComposition comp, BossCompositionCandidates compList, int maxAllowedSwaps)
-	{
-		List<RaidComposition> ret=new ArrayList<RaidComposition>();
-		Map<RaidBoss, RaidComposition> bossComps = new HashMap<>();
-		Set<RaidSlot> slots=comp.getSlots();
-		//we are trying to find compositions from compList that are closer than maxAllowedSwaps
-		for (RaidComposition comp2:compList.getComps())//for every composition in compList
-		{
-			int swaps=0;
-			for (RaidSlot slot2:comp2.getSlots())
+			indexes[0]++;
+			while (indexes[n] == sizes[n])
 			{
-				if (!slots.contains(slot2)) swaps++;
-				if (swaps>maxAllowedSwaps) break;
+				if (n == wingCount-1)
+				{
+					return ret;
+				}
+				indexes[n]=0;
+				n++;
+				indexes[n]++;
 			}
-			if (swaps<=maxAllowedSwaps)
-			{
-
-			}
+			n=0;
 		}
-
-	}*/
-
-	/*private int getSwapsBetween(RaidComposition comp1, RaidComposition comp2)
-	{
-
 	}
 
-	private boolean matcher(RaidComposition comp1, RaidComposition comp2)
+	private List<RaidWingComposition> getAllWingCompositions(RaidWing wing, Map<RaidBoss, List<RaidComposition>> allComps)
 	{
-		return getSwapsBetween(comp1, comp2)<3;
-	}
-
-	private Iterator<RaidComposition> getMatchingCompositions(Iterator<RaidComposition> iter1, Iterator<RaidComposition> iter2, BiPredicate<RaidComposition, RaidComposition> matcher)
-	{
-		return Iterators.filter(iter2, (RaidComposition item2)->{
-			while (iter1.hasNext())
-			{
-				RaidComposition item1=iter1.next();
-				if (!matcher.test(item1, item2)) return false;
-			}
-			return true;
-		});
-	}*/
-	private static final class BossCompositionCandidates
-	{
-		private final RaidBoss boss;
-		private final List<RaidComposition> comps;
-
-		public BossCompositionCandidates(RaidBoss boss, List<RaidComposition> comps)
+		List<RaidWingComposition> ret=new LinkedList<>();
+		List<RaidBoss> bosses=wing.getBosses();
+		int bossCount=bosses.size();
+		int[] indexes=new int[bossCount];
+		int[] sizes=new int[bossCount];
+		List<RaidComposition>[] comps=new List[bossCount];
+		int i=0;
+		for (RaidBoss boss:bosses)
 		{
-			this.boss = boss;
+			indexes[i]=0;
+			sizes[i]=allComps.get(boss).size();
+			comps[i]=allComps.get(boss);
+			i++;
+		}
+		int n=0;
+		while (true)
+		{
+			Map<RaidBoss, RaidComposition> wingComp=null;
+			RaidComposition lastComp=null;
+			int totalSwaps=0;
+			for (i=0;i<bossCount;i++)
+			{
+				RaidComposition comp=comps[i].get(indexes[i]);
+				if (lastComp!=null)
+				{
+					Integer swaps=getSwapsBetween(lastComp, comp, MAX_SWAPS_BETWEEN_BOSSES);
+					if (swaps==null)
+					{
+						wingComp=null;
+						break;
+					}
+					if (wingComp==null)
+					{
+						wingComp=new HashMap<>();
+						wingComp.put(bosses.get(i-1), lastComp);
+						totalSwaps+=swaps;
+					}
+					wingComp.put(bosses.get(i), comp);
+					totalSwaps+=swaps;
+				}
+				lastComp=comp;
+			}
+			if (wingComp!=null) ret.add(new RaidWingComposition(wing, wingComp, totalSwaps));
+
+			indexes[0]++;
+			while (indexes[n] == sizes[n])
+			{
+				if (n == bossCount-1)
+				{
+					return ret;
+				}
+				indexes[n]=0;
+				n++;
+				indexes[n]++;
+			}
+			n=0;
+		}
+	}
+
+
+	private Integer getSwapsBetween(RaidWingComposition comp1, RaidWingComposition comp2, int max)
+	{
+		return getSwapsBetween(comp1.getLastComposition(), comp2.getFirstComposition(), max);
+	}
+
+	private Integer getSwapsBetween(RaidComposition comp1, RaidComposition comp2, int max)
+	{
+		int swaps=0;
+		for (RaidSlot slot2:comp2.getSlots())
+		{
+			if (!comp1.getSlots().contains(slot2)) swaps++;
+			if (swaps>max) return null;
+		}
+		return swaps;
+	}
+
+	private static final class RaidWingComposition
+	{
+		private final RaidWing wing;
+		private final Map<RaidBoss, RaidComposition> comps;
+		private final int swaps;
+
+		public RaidWingComposition(RaidWing wing, Map<RaidBoss, RaidComposition> comps, int swaps)
+		{
+			this.wing = wing;
 			this.comps = comps;
+			this.swaps=swaps;
 		}
 
-		public RaidBoss getBoss()
+		public int getSwaps()
 		{
-			return boss;
+			return swaps;
 		}
 
-		public List<RaidComposition> getComps()
+		public RaidWing getWing()
+		{
+			return wing;
+		}
+
+		public RaidComposition getComposition(RaidBoss boss)
+		{
+			return comps.get(boss);
+		}
+
+		public RaidComposition getFirstComposition()
+		{
+			return comps.get(wing.getFirstBoss());
+		}
+
+		public RaidComposition getLastComposition()
+		{
+			return comps.get(wing.getLastBoss());
+		}
+
+		public Map<RaidBoss, RaidComposition> getCompositions()
 		{
 			return comps;
-		}
-
-		public int count()
-		{
-			return comps.size();
 		}
 	}
 }
