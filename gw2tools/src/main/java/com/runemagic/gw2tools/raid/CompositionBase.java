@@ -8,7 +8,7 @@ public class CompositionBase
 {
 	private final List<RaidRole> roles;
 
-	public CompositionBase(RaidRole... roles)
+	public CompositionBase(List<RaidRole> roles)
 	{
 		//TODO null check
 		this.roles = ImmutableList.copyOf(roles);

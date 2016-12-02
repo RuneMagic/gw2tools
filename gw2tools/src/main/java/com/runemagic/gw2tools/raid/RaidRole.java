@@ -1,29 +1,46 @@
 package com.runemagic.gw2tools.raid;
 
-public enum RaidRole
+public class RaidRole
 {
-	CHRONOTANK("Chronotank"),
-	CHRONOMANCER("Chronomancer"),
-	HEALER_DRUID("Healer Druid"),
-	PROTECTION("Protection"),
-	PS_WARRIOR("PS Warrior"),
-	CONDI_WARRIOR("Condi PS Warrior"),
-	CONDITION_DAMAGE("Condition DPS"),
-	CONDITION_NECROMANCER("Condition Necromancer"),
-	POWER_DAMAGE("Power DPS"),
-	RANGED_DPS("Ranged Power DPS"),
-	REVENANT("Revenant"),
-	HAMMER_DRAGONHUNTER("Hammer Dragonhunter");
-
 	private final String name;
+	private final String shortName;
 
-	private RaidRole(String name)
+	public RaidRole(String name, String shortName)
 	{
 		this.name=name;
+		this.shortName=(shortName!=null && !shortName.isEmpty()?shortName:name);
 	}
 
 	public String getName()
 	{
 		return name;
+	}
+
+	public String getShortName()
+	{
+		return shortName;
+	}
+
+	@Override public boolean equals(Object o)
+	{
+		if (this == o) return true;
+		if (!(o instanceof RaidRole)) return false;
+
+		RaidRole raidRole = (RaidRole) o;
+
+		return getName().equals(raidRole.getName());
+	}
+
+	@Override public int hashCode()
+	{
+		return getName().hashCode();
+	}
+
+	@Override public String toString()
+	{
+		return "RaidRole{" +
+				"name='" + name + '\'' +
+				", shortName='" + shortName + '\'' +
+				'}';
 	}
 }

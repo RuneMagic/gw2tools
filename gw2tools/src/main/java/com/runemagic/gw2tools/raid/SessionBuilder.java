@@ -1,6 +1,7 @@
 package com.runemagic.gw2tools.raid;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,13 +14,13 @@ import com.google.common.collect.ImmutableSet;
 
 public class SessionBuilder
 {
-	private static final int MAX_SWAPS_BETWEEN_BOSSES=3;
-	private static final int MAX_SWAPS_BETWEEN_WINGS=3;
+	private static final int MAX_SWAPS_BETWEEN_BOSSES=4;
+	private static final int MAX_SWAPS_BETWEEN_WINGS=5;
 
 	private final SessionBase base;
 	private final Set<RaidMember> members;
 
-	public SessionBuilder(SessionBase base, Set<RaidMember> members)
+	public SessionBuilder(SessionBase base, Collection<RaidMember> members)
 	{
 		this.base=base;
 		this.members = ImmutableSet.copyOf(members);
@@ -107,7 +108,24 @@ public class SessionBuilder
 		Map<RaidWing, List<RaidWingComposition>> allWingComps=new HashMap<>();
 		for (RaidWing wing:base.getRaidWings())
 		{
-			List<RaidWingComposition> wingComps=getAllWingCompositions(wing, comps);
+			List<RaidWingComposition> wingComps=new ArrayList<>(getAllWingCompositions(wing, comps));
+			Collections.sort(wingComps, (c1,c2)->{
+				return Integer.compare(c1.getSwaps(), c2.getSwaps());
+			});
+			int lowestSwaps=wingComps.get(0).getSwaps();
+			System.out.println("lowest swaps="+lowestSwaps);
+			if (wingComps.size()>100)
+			{
+				List<RaidWingComposition> tmp=new ArrayList<>();
+				int highestSwaps=wingComps.get(100).getSwaps();
+				System.out.println("highest swaps="+highestSwaps);
+				for (RaidWingComposition wingComp:wingComps)
+				{
+					if (wingComp.getSwaps()>highestSwaps) break;
+					else tmp.add(wingComp);
+				}
+				wingComps=tmp;
+			}
 			System.out.println(wing+"="+wingComps.size());
 			allWingComps.put(wing, wingComps);
 		}
@@ -248,17 +266,31 @@ public class SessionBuilder
 		int swaps=0;
 		for (RaidSlot slot2:comp2.getSlots())
 		{
+			//if (!containsNoSwap(slot2, comp1.getSlots())) swaps++;
 			if (!comp1.getSlots().contains(slot2)) swaps++;
 			if (swaps>max) return null;
 		}
 		return swaps;
 	}
 
+	/*private boolean containsNoSwap(RaidSlot slot, Set<RaidSlot> slots)
+	{
+		for (RaidSlot otherSlot:slots)
+		{
+			if (slot.getMember().equals(otherSlot.getMember()) && !slot.getRole().requiresSwap(otherSlot.getRole()))
+			{
+				return true;
+			}
+		}
+		return false;
+	}*/
+
 	private static final class RaidWingComposition
 	{
 		private final RaidWing wing;
 		private final Map<RaidBoss, RaidComposition> comps;
 		private final int swaps;
+		private Float avgPref=null;
 
 		public RaidWingComposition(RaidWing wing, Map<RaidBoss, RaidComposition> comps, int swaps)
 		{
@@ -295,6 +327,22 @@ public class SessionBuilder
 		public Map<RaidBoss, RaidComposition> getCompositions()
 		{
 			return comps;
+		}
+
+		public float getAveragePreference()
+		{
+			if (avgPref==null)
+			{
+				float sum=0;
+				int n=0;
+				for (RaidComposition comp:comps.values())
+				{
+					sum+=comp.getAveragePreference();
+					n++;
+				}
+				avgPref=sum/(float)n;
+			}
+			return avgPref;
 		}
 	}
 }

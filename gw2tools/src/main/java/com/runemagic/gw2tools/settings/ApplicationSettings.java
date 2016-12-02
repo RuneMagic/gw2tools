@@ -37,10 +37,19 @@ public class ApplicationSettings extends AbstractFXSettingsSheet
     public SimpleStringProperty raidPreferencesRange;
 
     @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Composition Spreadsheet ID")
-    public SimpleStringProperty compositionSpreadsheetID;
+    public SimpleStringProperty raidCompositionSpreadsheetID;
 
-    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Composition Output Sheet")
-    public SimpleStringProperty compositionSheetName;
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Roles Range")
+    public SimpleStringProperty raidRolesRange;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Builds Range")
+    public SimpleStringProperty raidBuildsRange;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Composition Base Range")
+    public SimpleStringProperty raidCompositionBaseRange;
+
+    @FXSetting(type = String.class, moduleType = FXModuleType.TEXT_FIELD, category = "Raids", displayName = "Raid Session Output Sheet")
+    public SimpleStringProperty raidSessionSheetName;
 
     public ApplicationSettings()
     {

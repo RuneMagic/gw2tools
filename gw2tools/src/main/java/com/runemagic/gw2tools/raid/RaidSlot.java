@@ -30,7 +30,7 @@ public class RaidSlot
 
 		RaidSlot raidSlot = (RaidSlot) o;
 
-		if (getRole() != raidSlot.getRole()) return false;
+		if (!getRole().equals(raidSlot.getRole())) return false;
 		return getMember().equals(raidSlot.getMember());
 
 	}

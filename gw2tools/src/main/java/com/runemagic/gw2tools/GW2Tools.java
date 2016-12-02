@@ -28,7 +28,7 @@ import com.faelar.util.javafx.JFXTools;
 import com.runemagic.gw2tools.api.account.GW2Account;
 import com.runemagic.gw2tools.gui.ApplicationManager;
 import com.runemagic.gw2tools.gui.assets.AssetManager;
-import com.runemagic.gw2tools.raid.GoogleSheetsMemberLoader;
+import com.runemagic.gw2tools.raid.GoogleSheetsInterface;
 import com.runemagic.gw2tools.raid.RaidManager;
 import com.runemagic.gw2tools.reference.Reference;
 import com.runemagic.gw2tools.settings.ApplicationSettings;
@@ -71,7 +71,7 @@ public class GW2Tools extends Application
 		res=new ResourceManager("com/runemagic/gw2tools/res/", "res");
 		threads=new GlobalPoolThreadManager();
 		assets = new AssetManager();
-		raid=new RaidManager(new GoogleSheetsMemberLoader());
+		raid=new RaidManager(new GoogleSheetsInterface());
 		settings = new FXSettingsManager();
 		settings.registerSerializer(FXSettingsSerializerType.FX_PREFERENCES, new PreferencesFXSettingsSerializer());
 
